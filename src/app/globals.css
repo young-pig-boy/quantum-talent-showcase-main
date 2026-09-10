@@ -1,0 +1,804 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --font-sans:
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', ui-sans-serif,
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  --font-serif:
+    'Noto Serif SC', 'Songti SC', 'SimSun', ui-serif, Georgia, Cambria,
+    'Times New Roman', Times, serif;
+
+  /* Quantum brand colors — theme-aware */
+  --color-quantum-gold: var(--quantum-gold);
+  --color-quantum-gold-light: var(--quantum-gold-light);
+  --color-quantum-void: #0a0a0b;
+  --color-quantum-charcoal: #1a1a1d;
+  --color-quantum-graphite: #232326;
+  --color-quantum-moon: #f5f5f7;
+  --color-quantum-dust: #a1a1aa;
+  --color-quantum-ash: #71717a;
+
+  /* Hero superposition field — theme-aware */
+  --color-hero-bg: var(--hero-bg);
+  --color-hero-ink: var(--hero-ink);
+  --color-hero-ink-soft: var(--hero-ink-soft);
+  --color-hero-ink-faint: var(--hero-ink-faint);
+
+  /* Accent light variant */
+  --color-accent-light: var(--accent-light);
+
+  /* Accent with alpha variants (for decorative elements) */
+  --color-accent-10: var(--accent-10);
+  --color-accent-20: var(--accent-20);
+  --color-accent-30: var(--accent-30);
+  --color-accent-40: var(--accent-40);
+
+  /* Surface glass */
+  --color-surface-glass: var(--surface-glass);
+  --color-surface-glass-hover: var(--surface-glass-hover);
+  --color-surface-glass-strong: var(--surface-glass-strong);
+
+  /* Section alternate bg */
+  --color-section-alt: var(--section-alt);
+}
+
+/* ═══════════════════════════════════════════════════
+   LIGHT THEME (default)
+   ═══════════════════════════════════════════════════ */
+:root {
+  --radius: 0.625rem;
+
+  /* Core surfaces */
+  --background: #f7f9fc;
+  --foreground: #111827;
+  --card: #fff;
+  --card-foreground: #111827;
+  --popover: #fff;
+  --popover-foreground: #111827;
+
+  /* Primary / Secondary */
+  --primary: #4f46e5;
+  --primary-foreground: #fff;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #374151;
+
+  /* Muted */
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+
+  /* Accent — indigo-blue for light mode quantum tech feel */
+  --accent: #6366f1;
+  --accent-light: #818cf8;
+  --accent-foreground: #fff;
+
+  /* Destructive */
+  --destructive: oklch(0.577 0.245 27.325);
+
+  /* Borders & inputs */
+  --border: rgb(15 23 42 / 8%);
+  --input: rgb(15 23 42 / 8%);
+  --ring: #6366f1;
+
+  /* Charts */
+  --chart-1: #6366f1;
+  --chart-2: #8b5cf6;
+  --chart-3: #06b6d4;
+  --chart-4: #a78bfa;
+  --chart-5: #3b82f6;
+
+  /* Sidebar */
+  --sidebar: #f7f9fc;
+  --sidebar-foreground: #111827;
+  --sidebar-primary: #4f46e5;
+  --sidebar-primary-foreground: #fff;
+  --sidebar-accent: #eef2ff;
+  --sidebar-accent-foreground: #374151;
+  --sidebar-border: rgb(15 23 42 / 8%);
+  --sidebar-ring: #6366f1;
+
+  /* Brand accent — indigo for light mode */
+  --quantum-gold: #6366f1;
+  --quantum-gold-light: #818cf8;
+
+  /* Accent alpha variants */
+  --accent-10: rgb(99 102 241 / 10%);
+  --accent-20: rgb(99 102 241 / 20%);
+  --accent-30: rgb(99 102 241 / 30%);
+  --accent-40: rgb(99 102 241 / 40%);
+
+  /* Glass surfaces — light mode */
+  --surface-glass: rgb(255 255 255 / 75%);
+  --surface-glass-hover: rgb(255 255 255 / 85%);
+  --surface-glass-strong: rgb(255 255 255 / 90%);
+
+  /* Alternate section background */
+  --section-alt: #f0f4f8;
+
+  /* Hero superposition field — warm paper white, never pure #fff */
+  --hero-bg: #f7f4ee;
+  --hero-ink: #171a22;
+  --hero-ink-soft: rgb(23 26 34 / 55%);
+  --hero-ink-faint: rgb(23 26 34 / 32%);
+
+  /* Superposition volumes — deep blue / vermilion / amber (multiply ink) */
+  --qv-blob-1-bg: radial-gradient(
+    closest-side,
+    rgb(42 72 235 / 88%),
+    rgb(58 92 248 / 52%) 52%,
+    rgb(58 92 248 / 0%) 74%
+  );
+  --qv-blob-2-bg: radial-gradient(
+    closest-side,
+    rgb(255 74 46 / 82%),
+    rgb(255 96 58 / 46%) 54%,
+    rgb(255 96 58 / 0%) 76%
+  );
+  --qv-blob-3-bg: radial-gradient(
+    closest-side,
+    rgb(255 176 58 / 78%),
+    rgb(255 190 84 / 40%) 55%,
+    rgb(255 190 84 / 0%) 75%
+  );
+  --qv-blob-4-bg: radial-gradient(
+    closest-side,
+    rgb(122 167 255 / 72%),
+    rgb(140 180 255 / 34%) 55%,
+    rgb(140 180 255 / 0%) 75%
+  );
+  --qv-blend: multiply;
+  --qv-ring-stroke: rgb(23 26 34 / 16%);
+  --qv-noise-opacity: 0.05;
+
+  /* Hero readability veils */
+  --hero-veil-left: linear-gradient(
+    100deg,
+    rgb(247 244 238 / 88%) 0%,
+    rgb(247 244 238 / 52%) 34%,
+    rgb(247 244 238 / 14%) 60%,
+    transparent 82%
+  );
+  --hero-veil-mobile: linear-gradient(
+    180deg,
+    rgb(247 244 238 / 62%) 0%,
+    rgb(247 244 238 / 30%) 34%,
+    rgb(247 244 238 / 44%) 64%,
+    rgb(247 244 238 / 92%) 100%
+  );
+  --hero-veil-top: linear-gradient(
+    to bottom,
+    rgb(247 244 238 / 55%) 0%,
+    transparent 100%
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   DARK THEME (existing quantum visual)
+   ═══════════════════════════════════════════════════ */
+.dark {
+  --background: #0a0a0b;
+  --foreground: #f5f5f7;
+  --card: #111113;
+  --card-foreground: #f5f5f7;
+  --popover: #1a1a1d;
+  --popover-foreground: #f5f5f7;
+  --primary: #f5f5f7;
+  --primary-foreground: #0a0a0b;
+  --secondary: #1a1a1d;
+  --secondary-foreground: #f5f5f7;
+  --muted: #232326;
+  --muted-foreground: #a1a1aa;
+  --accent: #d4a574;
+  --accent-light: #e8c39e;
+  --accent-foreground: #0a0a0b;
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: rgb(255 255 255 / 10%);
+  --input: rgb(255 255 255 / 15%);
+  --ring: #d4a574;
+  --chart-1: #d4a574;
+  --chart-2: #a1a1aa;
+  --chart-3: #71717a;
+  --chart-4: #e8c39e;
+  --chart-5: #f5f5f7;
+  --sidebar: #0a0a0b;
+  --sidebar-foreground: #f5f5f7;
+  --sidebar-primary: #f5f5f7;
+  --sidebar-primary-foreground: #0a0a0b;
+  --sidebar-accent: #1a1a1d;
+  --sidebar-accent-foreground: #f5f5f7;
+  --sidebar-border: rgb(255 255 255 / 10%);
+  --sidebar-ring: #d4a574;
+
+  /* Brand accent — gold for dark mode */
+  --quantum-gold: #d4a574;
+  --quantum-gold-light: #e8c39e;
+
+  /* Accent alpha variants */
+  --accent-10: rgb(212 165 116 / 10%);
+  --accent-20: rgb(212 165 116 / 20%);
+  --accent-30: rgb(212 165 116 / 30%);
+  --accent-40: rgb(212 165 116 / 40%);
+
+  /* Glass surfaces — dark mode */
+  --surface-glass: rgb(255 255 255 / 6%);
+  --surface-glass-hover: rgb(255 255 255 / 10%);
+  --surface-glass-strong: rgb(255 255 255 / 10%);
+
+  /* Alternate section background */
+  --section-alt: #111113;
+
+  /* Hero superposition field — deep black-blue, never pure #000 */
+  --hero-bg: #070a12;
+  --hero-ink: #f2f4fa;
+  --hero-ink-soft: rgb(242 244 250 / 55%);
+  --hero-ink-faint: rgb(242 244 250 / 32%);
+
+  /* Superposition volumes — blue / cyan / violet / magenta (screen glow) */
+  --qv-blob-1-bg: radial-gradient(
+    closest-side,
+    rgb(59 110 246 / 62%),
+    rgb(74 122 250 / 30%) 52%,
+    rgb(74 122 250 / 0%) 74%
+  );
+  --qv-blob-2-bg: radial-gradient(
+    closest-side,
+    rgb(34 211 238 / 46%),
+    rgb(56 218 240 / 22%) 54%,
+    rgb(56 218 240 / 0%) 76%
+  );
+  --qv-blob-3-bg: radial-gradient(
+    closest-side,
+    rgb(139 92 246 / 52%),
+    rgb(152 106 250 / 25%) 55%,
+    rgb(152 106 250 / 0%) 75%
+  );
+  --qv-blob-4-bg: radial-gradient(
+    closest-side,
+    rgb(236 72 153 / 40%),
+    rgb(240 98 168 / 18%) 55%,
+    rgb(240 98 168 / 0%) 75%
+  );
+  --qv-blend: screen;
+  --qv-ring-stroke: rgb(242 244 250 / 14%);
+  --qv-noise-opacity: 0.07;
+
+  /* Hero readability veils */
+  --hero-veil-left: linear-gradient(
+    100deg,
+    rgb(7 10 18 / 82%) 0%,
+    rgb(7 10 18 / 58%) 26%,
+    rgb(7 10 18 / 38%) 44%,
+    rgb(7 10 18 / 22%) 60%,
+    rgb(7 10 18 / 10%) 74%,
+    transparent 86%
+  );
+  --hero-veil-mobile: linear-gradient(
+    180deg,
+    rgb(7 10 18 / 60%) 0%,
+    rgb(7 10 18 / 26%) 34%,
+    rgb(7 10 18 / 42%) 64%,
+    rgb(7 10 18 / 90%) 100%
+  );
+  --hero-veil-top: linear-gradient(
+    to bottom,
+    rgb(7 10 18 / 50%) 0%,
+    transparent 100%
+  );
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  [id] {
+    scroll-margin-top: 7rem;
+  }
+  #hero {
+    scroll-margin-top: 0;
+  }
+
+  /* Job Fast Lane sub-sections need extra margin for sticky sub-nav */
+  #job-center,
+  #urgent-jobs,
+  #featured-jobs,
+  #quantum-tracks {
+    scroll-margin-top: 9rem;
+  }
+}
+
+@media (width <= 768px) {
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+  #hero {
+    scroll-margin-top: 0;
+  }
+  #job-center,
+  #urgent-jobs,
+  #featured-jobs,
+  #quantum-tracks {
+    scroll-margin-top: 8rem;
+  }
+}
+
+body {
+  @apply font-sans antialiased;
+
+  background-color: var(--background);
+  color: var(--foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Scroll snap for hero narrative */
+.snap-y-proximity {
+  scroll-snap-type: y proximity;
+}
+
+.snap-start {
+  scroll-snap-align: start;
+}
+
+/* ═══════════════════════════════════════════════════
+   Liquid glass utilities — theme-aware
+   ═══════════════════════════════════════════════════ */
+.liquid-glass {
+  background: var(--surface-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--border);
+  box-shadow: var(--glass-shadow, 0 4px 24px rgb(0 0 0 / 8%), inset 0 1px 0 rgb(255 255 255 / 8%));
+  transition: all 0.3s ease;
+}
+
+.liquid-glass:hover {
+  background: var(--surface-glass-hover);
+  border-color: var(--border-hover, rgb(15 23 42 / 12%));
+}
+
+.liquid-glass-strong {
+  background: var(--surface-glass-strong);
+  backdrop-filter: blur(32px) saturate(180%);
+  border: 1px solid var(--border);
+  box-shadow: var(--glass-shadow, 0 4px 30px rgb(0 0 0 / 10%), inset 0 1px 0 rgb(255 255 255 / 10%));
+}
+
+/* Light mode glass shadows */
+:root .liquid-glass,
+:root .liquid-glass-strong {
+  --glass-shadow: 0 4px 24px rgb(0 0 0 / 6%), inset 0 1px 0 rgb(255 255 255 / 50%);
+}
+
+/* Dark mode glass overrides */
+.dark .liquid-glass {
+  --glass-shadow: 0 4px 24px rgb(0 0 0 / 30%), inset 0 1px 0 rgb(255 255 255 / 8%);
+  --border-hover: rgb(255 255 255 / 15%);
+}
+
+.dark .liquid-glass:hover {
+  background: rgb(255 255 255 / 8%);
+}
+
+.dark .liquid-glass-strong {
+  --glass-shadow: 0 4px 30px rgb(0 0 0 / 35%), inset 0 1px 0 rgb(255 255 255 / 10%);
+}
+
+/* ═══════════════════════════════════════════════════
+   Gradient overlays — theme-aware
+   ═══════════════════════════════════════════════════ */
+.hero-overlay {
+  background: linear-gradient(
+    180deg,
+    rgb(10 10 11 / 40%) 0%,
+    rgb(10 10 11 / 70%) 60%,
+    rgb(10 10 11 / 95%) 100%
+  );
+}
+
+.hero-overlay-left {
+  background: linear-gradient(
+    90deg,
+    rgb(10 10 11 / 92%) 0%,
+    rgb(10 10 11 / 70%) 40%,
+    rgb(10 10 11 / 20%) 70%,
+    transparent 100%
+  );
+}
+
+.section-fade {
+  background: linear-gradient(
+    180deg,
+    var(--background) 0%,
+    transparent 15%,
+    transparent 85%,
+    var(--background) 100%
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   Custom scrollbar — theme-aware
+   ═══════════════════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+
+/* ═══════════════════════════════════════════════════
+   Animation utilities
+   ═══════════════════════════════════════════════════ */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Hide scrollbar for mobile filters */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-fade-in-up,
+  .animate-bounce,
+  .animate-marquee {
+    animation: none !important;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Partner logo marquee */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee var(--marquee-speed, 30s) linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* ═══════════════════════════════════════════════════
+   Sonner toast — theme-aware
+   ═══════════════════════════════════════════════════ */
+.theme-toast {
+  background: var(--popover) !important;
+  color: var(--popover-foreground) !important;
+  border: 1px solid var(--border) !important;
+  backdrop-filter: blur(16px);
+}
+
+/* ═══════════════════════════════════════════════════
+   Quantum Superposition Hero Visual
+   Layered translucent volumes (orb / blob) overlapping
+   on a warm paper (light) / deep black-blue (dark) field.
+   Interference is created by blend modes, not images.
+   Design tokens live in the :root / .dark blocks above.
+   ═══════════════════════════════════════════════════ */
+
+/* Stage — positioning context for all layers */
+.qv-stage {
+  position: absolute;
+  top: 50%;
+  right: -6vw;
+  width: min(66vw, 62rem);
+  height: min(88vh, 58rem);
+  transform: translateY(-50%);
+  opacity: 0;
+  animation: qv-stage-in 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+  pointer-events: none;
+}
+
+@keyframes qv-stage-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Mouse-response layer — translated by --qv-mx / --qv-my (max ±8px) */
+.qv-layer {
+  position: absolute;
+  inset: 0;
+  transform: translate3d(
+    calc(var(--qv-mx, 0) * var(--qv-depth, 6px)),
+    calc(var(--qv-my, 0) * var(--qv-depth, 6px)),
+    0
+  );
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.qv-depth-1 { --qv-depth: 3px; }
+.qv-depth-2 { --qv-depth: 5px; }
+.qv-depth-3 { --qv-depth: 8px; }
+.qv-depth-4 { --qv-depth: 6px; }
+
+/* Breathing layer — 8~15s desynced micro motion (scale / translate / opacity) */
+.qv-breathe {
+  position: absolute;
+  inset: 0;
+  will-change: transform, opacity;
+}
+
+.qv-breathe-1 { animation: qv-breathe-a 12s ease-in-out infinite; }
+.qv-breathe-2 { animation: qv-breathe-b 14s ease-in-out -3.5s infinite; }
+.qv-breathe-3 { animation: qv-breathe-c 9.5s ease-in-out -1.8s infinite; }
+.qv-breathe-4 { animation: qv-breathe-d 11s ease-in-out -6s infinite; }
+
+@keyframes qv-breathe-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(0.99);
+    opacity: 0.96;
+  }
+  50% {
+    transform: translate3d(12px, -14px, 0) scale(1.02);
+    opacity: 1;
+  }
+}
+
+@keyframes qv-breathe-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.01);
+    opacity: 1;
+  }
+  50% {
+    transform: translate3d(-16px, 10px, 0) scale(0.98);
+    opacity: 0.94;
+  }
+}
+
+@keyframes qv-breathe-c {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(0.98);
+    opacity: 0.92;
+  }
+  50% {
+    transform: translate3d(10px, 16px, 0) scale(1.015);
+    opacity: 1;
+  }
+}
+
+@keyframes qv-breathe-d {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate3d(-10px, -12px, 0) scale(1.02);
+    opacity: 1;
+  }
+}
+
+/* Blob volumes — irregular radii, blurred, blend-mode interference */
+.qv-blob {
+  position: absolute;
+  mix-blend-mode: var(--qv-blend);
+  transform: translateZ(0);
+}
+
+.qv-blob-1 {
+  top: 16%;
+  left: 8%;
+  width: 62%;
+  aspect-ratio: 1;
+  background: var(--qv-blob-1-bg);
+  border-radius: 47% 53% 61% 39% / 53% 45% 55% 47%;
+  filter: blur(56px);
+}
+
+.qv-blob-2 {
+  top: 30%;
+  left: 34%;
+  width: 56%;
+  aspect-ratio: 1;
+  background: var(--qv-blob-2-bg);
+  border-radius: 56% 44% 42% 58% / 46% 58% 42% 54%;
+  filter: blur(60px);
+}
+
+.qv-blob-3 {
+  top: 4%;
+  left: 44%;
+  width: 34%;
+  aspect-ratio: 1;
+  background: var(--qv-blob-3-bg);
+  border-radius: 52% 48% 60% 40% / 44% 52% 48% 56%;
+  filter: blur(44px);
+}
+
+.qv-blob-4 {
+  top: 58%;
+  left: 12%;
+  width: 30%;
+  aspect-ratio: 1;
+  background: var(--qv-blob-4-bg);
+  border-radius: 44% 56% 48% 52% / 58% 42% 56% 44%;
+  filter: blur(40px);
+}
+
+/* Orbital traces — static ellipses, only opacity breathes (no rotation) */
+.qv-rings {
+  position: absolute;
+  inset: 0;
+}
+
+.qv-ring {
+  fill: none;
+  stroke: var(--qv-ring-stroke);
+  stroke-width: 1;
+}
+
+.qv-ring-a { animation: qv-ring-fade 13s ease-in-out infinite; }
+.qv-ring-b { animation: qv-ring-fade 15s ease-in-out -5s infinite; }
+
+@keyframes qv-ring-fade {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Fine grain — gives the volumes a printed, probabilistic texture */
+.qv-noise {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  opacity: var(--qv-noise-opacity);
+
+  /* Fade the left edge so the noise layer doesn't create a hard vertical
+     boundary at the qv-stage left edge (~40% viewport width).  The mask
+     ramps from fully transparent to fully opaque over the first 22% of
+     the stage width, dissolving the seam without affecting the texture
+     in the centre / right of the field. */
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 22%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 22%
+  );
+}
+
+/* Mobile — visual moves below / behind the title, never covering it */
+@media (width <= 768px) {
+  .qv-stage {
+    top: auto;
+    right: 50%;
+    bottom: -14%;
+    width: 118vw;
+    height: 62vh;
+    transform: translateX(50%);
+  }
+  .qv-blob-1 { filter: blur(38px); }
+  .qv-blob-2 { filter: blur(40px); }
+  .qv-blob-3 { filter: blur(30px); }
+  .qv-blob-4 { filter: blur(28px); }
+}
+
+/* Pause all hero breathing when hero leaves the viewport */
+.hero-offscreen .qv-breathe,
+.hero-offscreen .qv-ring-a,
+.hero-offscreen .qv-ring-b {
+  animation-play-state: paused;
+}
+
+/* Reduced motion — static poster, no breathing, no mouse response */
+@media (prefers-reduced-motion: reduce) {
+  .qv-stage {
+    animation: none;
+    opacity: 1;
+  }
+  .qv-breathe,
+  .qv-ring-a,
+  .qv-ring-b {
+    animation: none !important;
+  }
+  .qv-layer {
+    transition: none;
+    transform: none !important;
+  }
+}
+
+/* Hide scrollbar for horizontal scrollable tabs */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

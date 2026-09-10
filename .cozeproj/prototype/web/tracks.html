@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- 字体：Display(编辑式衬线) + Body(中文无衬线) + Label(等宽) -->
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet"/>
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色：地平线金 === */
+      --color-primary:              #d4a574;
+      --color-primary-container:    rgba(212, 165, 116, 0.12);
+      --color-on-primary:           #0a0a0b;
+      /* === 背景 / 表面：深空色阶 === */
+      --color-background:                 #0a0a0b;
+      --color-surface-container-lowest:   #0d0d0f;
+      --color-surface:                    #111113;
+      --color-surface-container:          #1a1a1d;
+      --color-surface-container-high:     #232326;
+      --color-surface-container-highest:  #2a2a2e;
+      /* === 文字 === */
+      --color-on-surface:           #f5f5f7;
+      --color-on-surface-variant:   #a1a1aa;
+      /* === 功能色 === */
+      --color-success:  #22c55e;
+      --color-error:    #ef4444;
+      --color-warning:  #f59e0b;
+      /* === 边框 === */
+      --color-outline:          rgba(255, 255, 255, 0.12);
+      --color-outline-variant:  rgba(255, 255, 255, 0.06);
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（深色主题，opacity 偏高） === */
+      --shadow-card:   0 2px 12px rgba(0,0,0,0.4);
+      --shadow-float:  0 10px 30px rgba(0,0,0,0.5);
+      --shadow-dialog: 0 25px 60px rgba(0,0,0,0.6);
+      /* === 字体角色 === */
+      --font-display: "Fraunces", "Noto Serif SC", Georgia, serif;
+      --font-sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      --font-label: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+
+  <!-- 液态玻璃导航样式 -->
+  <style>
+    .liquid-glass {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+    .liquid-glass:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .scroll-reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-reveal { opacity: 1; transform: none; transition: none; }
+      * { scroll-behavior: auto !important; }
+    }
+    .hero-overlay {
+      background: linear-gradient(180deg, rgba(10,10,11,0.3) 0%, rgba(10,10,11,0.6) 50%, rgba(10,10,11,0.95) 100%);
+    }
+    .hero-overlay-left {
+      background: linear-gradient(90deg, rgba(10,10,11,0.92) 0%, rgba(10,10,11,0.7) 40%, rgba(10,10,11,0.2) 70%, transparent 100%);
+    }
+    /* 赛道编号装饰 */
+    .track-number {
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 300;
+      line-height: 0.85;
+      letter-spacing: -0.04em;
+    }
+    /* 赛道视觉锚点 */
+    .track-visual {
+      position: relative;
+      overflow: hidden;
+    }
+    .track-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 50%, rgba(212,165,116,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    /* 赛道链接下划线动画 */
+    .track-link {
+      position: relative;
+    }
+    .track-link::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 100%;
+      height: 1px;
+      background: currentColor;
+      transform: scaleX(0.4);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .track-link:hover::after {
+      transform: scaleX(1);
+    }
+    /* 关键词标签 hover */
+    .keyword-tag {
+      transition: border-color 0.3s ease, color 0.3s ease;
+    }
+    .keyword-tag:hover {
+      border-color: rgba(212,165,116,0.4);
+      color: #f5f5f7;
+    }
+  </style>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件 -->
+  <header class="fixed top-0 left-0 right-0 z-50 px-4 py-3 sm:px-6 transition-all duration-300" id="site-header">
+    <div class="mx-auto max-w-7xl">
+      <div class="liquid-glass flex items-center justify-between rounded-full px-4 py-2.5 sm:px-6">
+        <a href="home.html" class="flex items-center gap-2.5 text-on-surface transition-opacity hover:opacity-80">
+          <span class="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 font-label text-sm font-medium text-primary">Q</span>
+          <span class="font-sans text-sm font-medium tracking-tight sm:text-base">量子人才网络</span>
+        </a>
+        <nav class="hidden items-center gap-1 md:flex">
+          <a href="home.html" class="rounded-lg px-4 py-2 text-sm text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface" data-nav="home">首页</a>
+          <a href="tracks.html" class="rounded-lg px-4 py-2 text-sm font-medium text-primary bg-primary/10" data-nav="tracks" aria-current="page">赛道</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2 text-sm text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface" data-nav="opportunities">岗位</a>
+        </nav>
+        <div class="flex items-center gap-3">
+          <a href="opportunities.html" class="hidden rounded-full bg-on-surface px-5 py-2 text-sm font-medium text-background transition-all hover:bg-primary hover:text-on-primary sm:inline-flex">探索岗位</a>
+          <button id="mobile-menu-btn" class="md:hidden text-on-surface p-1.5" aria-label="菜单">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+      <!-- 移动端菜单 -->
+      <div id="mobile-menu" class="hidden mt-2 liquid-glass rounded-2xl p-4 md:hidden">
+        <nav class="flex flex-col gap-1">
+          <a href="home.html" class="rounded-lg px-4 py-2.5 text-sm text-on-surface-variant hover:bg-white/5 hover:text-on-surface">首页</a>
+          <a href="tracks.html" class="rounded-lg px-4 py-2.5 text-sm font-medium text-primary">赛道</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2.5 text-sm text-on-surface-variant hover:bg-white/5 hover:text-on-surface">岗位</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2.5 text-sm font-medium text-primary">探索岗位</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <script>
+    $(function() {
+      var $btn = $('#mobile-menu-btn');
+      var $menu = $('#mobile-menu');
+      $btn.on('click', function() { $menu.slideToggle(200); });
+    });
+  </script>
+  <!-- @nav:end 导航组件 -->
+
+  <main class="max-w-7xl mx-auto">
+
+    <!-- @main-content:start -->
+
+    <!-- ===== 页面头部：左对齐编辑式标题 ===== -->
+    <section class="pt-32 pb-16 px-6 sm:px-8">
+      <div class="max-w-3xl">
+        <span class="font-label text-xs tracking-[0.25em] text-primary uppercase">Technology Tracks</span>
+        <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-light text-on-surface mt-6 leading-[1.05] tracking-tight">
+          量子技术赛道
+        </h1>
+        <p class="font-sans text-base sm:text-lg text-on-surface-variant mt-8 leading-relaxed max-w-2xl">
+          覆盖当前最具产业化潜力的量子技术路线，每个赛道都连接着真实的岗位机会与研究合作。
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== 赛道 01：超导量子 — 内容偏左 ===== -->
+    <section class="scroll-reveal py-12 sm:py-16 px-6 sm:px-8" id="track-01">
+      <div class="relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <!-- 大编号背景装饰 -->
+        <span class="track-number absolute -top-8 right-0 sm:-top-12 sm:right-4 text-[10rem] sm:text-[14rem] text-on-surface/[0.04] select-none pointer-events-none z-0">01</span>
+
+        <!-- 左侧文本内容 — 占 6 列，偏左 -->
+        <div class="lg:col-span-6 lg:col-start-1 relative z-10">
+          <span class="font-label text-xs tracking-[0.2em] text-on-surface-variant uppercase">Superconducting Quantum</span>
+          <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-medium text-on-surface mt-3 leading-tight">超导量子</h2>
+          <p class="font-sans text-sm sm:text-base text-on-surface-variant mt-5 leading-relaxed max-w-lg">
+            基于超导电路的量子计算路线，是目前产业界最成熟、扩展性最强的技术方向之一。涉及量子比特设计、低温测控、微波工程与纠错算法。
+          </p>
+          <!-- 关键词标签 -->
+          <div class="flex flex-wrap gap-2 mt-6">
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">量子比特</span>
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">低温测控</span>
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">微波工程</span>
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">量子纠错</span>
+          </div>
+          <a href="tracks-superconducting.html" id="link-track-01" class="track-link inline-flex items-center gap-2 mt-8 font-sans text-sm font-medium text-primary">
+            探索赛道
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+
+        <!-- 右侧视觉锚点 — 占 5 列，偏右留白 -->
+        <div class="lg:col-span-5 lg:col-start-8 relative z-10">
+          <div class="track-visual aspect-[4/3] rounded-2xl bg-surface-container-lowest border border-outline-variant">
+            <!-- 视觉装饰：量子电路意象 -->
+            <div class="absolute inset-0 flex items-center justify-center p-8">
+              <div class="w-full h-full flex flex-col justify-center gap-4 opacity-50">
+                <!-- 量子比特连接线意象 -->
+                <div class="flex items-center gap-3">
+                  <div class="w-3 h-3 rounded-full border border-primary/40"></div>
+                  <div class="flex-1 h-px bg-gradient-to-r from-primary/30 to-transparent"></div>
+                  <div class="w-3 h-3 rounded-full border border-primary/40"></div>
+                  <div class="flex-1 h-px bg-gradient-to-r from-primary/20 to-transparent"></div>
+                  <div class="w-3 h-3 rounded-full border border-primary/40"></div>
+                </div>
+                <div class="flex items-center gap-3 pl-6">
+                  <div class="w-3 h-3 rounded-full border border-primary/30"></div>
+                  <div class="flex-1 h-px bg-gradient-to-r from-primary/20 to-transparent"></div>
+                  <div class="w-3 h-3 rounded-full border border-primary/30"></div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="w-3 h-3 rounded-full border border-primary/40"></div>
+                  <div class="flex-1 h-px bg-gradient-to-r from-primary/30 to-transparent"></div>
+                  <div class="w-3 h-3 rounded-full border border-primary/40"></div>
+                  <div class="flex-1 h-px bg-gradient-to-r from-primary/20 to-transparent"></div>
+                  <div class="w-3 h-3 rounded-full border border-primary/40"></div>
+                </div>
+                <div class="flex items-center gap-3 pl-12">
+                  <div class="w-3 h-3 rounded-full border border-primary/20"></div>
+                  <div class="flex-1 h-px bg-gradient-to-r from-primary/10 to-transparent"></div>
+                  <div class="w-3 h-3 rounded-full border border-primary/20"></div>
+                </div>
+              </div>
+            </div>
+            <!-- 角标标签 -->
+            <div class="absolute bottom-4 left-5">
+              <span class="font-label text-[10px] tracking-widest text-on-surface-variant/50 uppercase">Qubit Lattice · 50+ qubits</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 分割线 -->
+    <div class="px-6 sm:px-8">
+      <div class="h-px bg-outline-variant"></div>
+    </div>
+
+    <!-- ===== 赛道 02：离子阱 — 内容偏右 ===== -->
+    <section class="scroll-reveal py-12 sm:py-16 px-6 sm:px-8" id="track-02">
+      <div class="relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <!-- 大编号背景装饰 -->
+        <span class="track-number absolute -top-8 left-0 sm:-top-12 sm:left-4 text-[10rem] sm:text-[14rem] text-on-surface/[0.04] select-none pointer-events-none z-0">02</span>
+
+        <!-- 左侧视觉锚点 — 占 5 列，偏左 -->
+        <div class="lg:col-span-5 lg:col-start-1 lg:order-1 order-2 relative z-10">
+          <div class="track-visual aspect-[4/3] rounded-2xl bg-surface-container border border-outline-variant">
+            <!-- 视觉装饰：离子阱线性链意象 -->
+            <div class="absolute inset-0 flex items-center justify-center p-8">
+              <div class="w-full h-full flex flex-col items-center justify-center gap-6 opacity-50">
+                <!-- 离子链 -->
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 rounded-full bg-primary/50"></div>
+                  <div class="w-2 h-2 rounded-full bg-primary/40"></div>
+                  <div class="w-2 h-2 rounded-full bg-primary/50"></div>
+                  <div class="w-2 h-2 rounded-full bg-primary/40"></div>
+                  <div class="w-2 h-2 rounded-full bg-primary/50"></div>
+                  <div class="w-2 h-2 rounded-full bg-primary/40"></div>
+                  <div class="w-2 h-2 rounded-full bg-primary/50"></div>
+                </div>
+                <!-- 激光线 -->
+                <div class="w-3/4 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
+                <div class="w-3/4 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+                <!-- 陷阱电极意象 -->
+                <div class="flex items-center gap-1">
+                  <div class="w-8 h-1 rounded-full bg-on-surface-variant/20"></div>
+                  <div class="w-8 h-1 rounded-full bg-on-surface-variant/20"></div>
+                  <div class="w-8 h-1 rounded-full bg-on-surface-variant/20"></div>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-4 left-5">
+              <span class="font-label text-[10px] tracking-widest text-on-surface-variant/50 uppercase">Ion Chain · 32 ions</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧文本内容 — 占 6 列，偏右 -->
+        <div class="lg:col-span-6 lg:col-start-7 lg:order-2 order-1 relative z-10">
+          <span class="font-label text-xs tracking-[0.2em] text-on-surface-variant uppercase">Ion Trap Quantum</span>
+          <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-medium text-on-surface mt-3 leading-tight">离子阱</h2>
+          <p class="font-sans text-sm sm:text-base text-on-surface-variant mt-5 leading-relaxed max-w-lg">
+            利用囚禁离子作为量子比特，具有长相干时间与高保真门操作的优势。涵盖离子操控、激光系统、真空技术与量子算法实现。
+          </p>
+          <!-- 关键词标签 -->
+          <div class="flex flex-wrap gap-2 mt-6">
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">离子操控</span>
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">激光系统</span>
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">真空技术</span>
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">量子门</span>
+          </div>
+          <a href="tracks-ion-trap.html" id="link-track-02" class="track-link inline-flex items-center gap-2 mt-8 font-sans text-sm font-medium text-primary">
+            探索赛道
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 分割线 -->
+    <div class="px-6 sm:px-8">
+      <div class="h-px bg-outline-variant"></div>
+    </div>
+
+    <!-- ===== 赛道 03：光量子 — 内容偏左，视觉块更紧凑 ===== -->
+    <section class="scroll-reveal py-12 sm:py-16 px-6 sm:px-8" id="track-03">
+      <div class="relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <!-- 大编号背景装饰 -->
+        <span class="track-number absolute -top-8 right-0 sm:-top-12 sm:right-4 text-[10rem] sm:text-[14rem] text-on-surface/[0.04] select-none pointer-events-none z-0">03</span>
+
+        <!-- 左侧文本内容 — 占 6 列，偏左 -->
+        <div class="lg:col-span-6 lg:col-start-1 relative z-10">
+          <span class="font-label text-xs tracking-[0.2em] text-on-surface-variant uppercase">Photonic Quantum</span>
+          <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-medium text-on-surface mt-3 leading-tight">光量子</h2>
+          <p class="font-sans text-sm sm:text-base text-on-surface-variant mt-5 leading-relaxed max-w-lg">
+            以单光子和纠缠光子作为信息载体，具备室温运行与天然兼容光通信网络的潜力。涉及光子源、线性光学、集成光路与量子协议。
+          </p>
+          <!-- 关键词标签 -->
+          <div class="flex flex-wrap gap-2 mt-6">
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">单光子源</span>
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">线性光学</span>
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">集成光路</span>
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">量子协议</span>
+          </div>
+          <a href="tracks-photonics.html" id="link-track-03" class="track-link inline-flex items-center gap-2 mt-8 font-sans text-sm font-medium text-primary">
+            探索赛道
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+
+        <!-- 右侧视觉锚点 — 占 4 列，更窄、更紧凑，偏右留白更多 -->
+        <div class="lg:col-span-4 lg:col-start-9 relative z-10">
+          <div class="track-visual aspect-square rounded-2xl bg-surface-container-high border border-outline-variant">
+            <!-- 视觉装饰：光路干涉意象 -->
+            <div class="absolute inset-0 flex items-center justify-center p-8">
+              <div class="w-full h-full flex flex-col items-center justify-center gap-5 opacity-50">
+                <!-- 光波纹 -->
+                <div class="relative w-24 h-24 flex items-center justify-center">
+                  <div class="absolute w-24 h-24 rounded-full border border-primary/20"></div>
+                  <div class="absolute w-16 h-16 rounded-full border border-primary/30"></div>
+                  <div class="absolute w-8 h-8 rounded-full border border-primary/40"></div>
+                  <div class="w-2 h-2 rounded-full bg-primary/60"></div>
+                </div>
+                <!-- 光路线 -->
+                <div class="w-full flex flex-col gap-2">
+                  <div class="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+                  <div class="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-4 left-5">
+              <span class="font-label text-[10px] tracking-widest text-on-surface-variant/50 uppercase">Photonic IC · Room Temp</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 分割线 -->
+    <div class="px-6 sm:px-8">
+      <div class="h-px bg-outline-variant"></div>
+    </div>
+
+    <!-- ===== 赛道 04：量子通信与测量 — 内容偏右，视觉块比例不同 ===== -->
+    <section class="scroll-reveal py-12 sm:py-16 px-6 sm:px-8" id="track-04">
+      <div class="relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <!-- 大编号背景装饰 -->
+        <span class="track-number absolute -top-8 left-0 sm:-top-12 sm:left-4 text-[10rem] sm:text-[14rem] text-on-surface/[0.04] select-none pointer-events-none z-0">04</span>
+
+        <!-- 左侧视觉锚点 — 占 4 列，更窄 -->
+        <div class="lg:col-span-4 lg:col-start-1 lg:order-1 order-2 relative z-10">
+          <div class="track-visual aspect-[3/4] rounded-2xl bg-surface-container-lowest border border-outline-variant">
+            <!-- 视觉装饰：量子密钥分发网络意象 -->
+            <div class="absolute inset-0 flex items-center justify-center p-8">
+              <div class="w-full h-full flex flex-col items-center justify-center gap-4 opacity-50">
+                <!-- 网络节点 -->
+                <div class="relative w-full h-32">
+                  <!-- 中心节点 -->
+                  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-primary/50"></div>
+                  <!-- 连接线 -->
+                  <svg class="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <line x1="50" y1="50" x2="15" y2="15" stroke="rgba(212,165,116,0.2)" stroke-width="0.5"/>
+                    <line x1="50" y1="50" x2="85" y2="15" stroke="rgba(212,165,116,0.2)" stroke-width="0.5"/>
+                    <line x1="50" y1="50" x2="15" y2="85" stroke="rgba(212,165,116,0.15)" stroke-width="0.5"/>
+                    <line x1="50" y1="50" x2="85" y2="85" stroke="rgba(212,165,116,0.15)" stroke-width="0.5"/>
+                    <line x1="50" y1="50" x2="50" y2="10" stroke="rgba(212,165,116,0.2)" stroke-width="0.5"/>
+                  </svg>
+                  <!-- 外围节点 -->
+                  <div class="absolute top-[10%] left-[12%] w-2 h-2 rounded-full border border-primary/40"></div>
+                  <div class="absolute top-[10%] right-[12%] w-2 h-2 rounded-full border border-primary/40"></div>
+                  <div class="absolute bottom-[10%] left-[12%] w-2 h-2 rounded-full border border-primary/30"></div>
+                  <div class="absolute bottom-[10%] right-[12%] w-2 h-2 rounded-full border border-primary/30"></div>
+                  <div class="absolute top-[5%] left-1/2 -translate-x-1/2 w-2 h-2 rounded-full border border-primary/40"></div>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-4 left-5">
+              <span class="font-label text-[10px] tracking-widest text-on-surface-variant/50 uppercase">QKD Network · BB84</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右侧文本内容 — 占 7 列，更宽，偏右 -->
+        <div class="lg:col-span-7 lg:col-start-6 lg:order-2 order-1 relative z-10">
+          <span class="font-label text-xs tracking-[0.2em] text-on-surface-variant uppercase">Quantum Communication &amp; Sensing</span>
+          <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-medium text-on-surface mt-3 leading-tight">量子通信与测量</h2>
+          <p class="font-sans text-sm sm:text-base text-on-surface-variant mt-5 leading-relaxed max-w-xl">
+            面向信息安全与精密测量的量子技术落地场景，包括量子密钥分发、量子随机数、量子雷达与高精度量子传感器研发。
+          </p>
+          <!-- 关键词标签 -->
+          <div class="flex flex-wrap gap-2 mt-6">
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">量子密钥分发</span>
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">量子随机数</span>
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">量子传感</span>
+            <span class="keyword-tag font-label text-xs px-3 py-1 border border-outline-variant rounded-full text-on-surface-variant">精密测量</span>
+          </div>
+          <a href="tracks-communication-sensing.html" id="link-track-04" class="track-link inline-flex items-center gap-2 mt-8 font-sans text-sm font-medium text-primary">
+            探索赛道
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 底部 CTA：简洁链接 ===== -->
+    <section class="scroll-reveal py-20 px-6 sm:px-8">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+        <span class="font-sans text-sm text-on-surface-variant">想要了解所有开放岗位？</span>
+        <a href="opportunities.html" id="link-all-jobs" class="track-link inline-flex items-center gap-2 font-display text-xl sm:text-2xl font-medium text-primary">
+          查看全部岗位
+          <i data-lucide="arrow-right" class="w-5 h-5"></i>
+        </a>
+      </div>
+    </section>
+
+    <!-- @main-content:end -->
+
+  </main>
+
+  <script>
+    $(function() {
+      // ===== Scroll Reveal 渐入动画 =====
+      function initScrollReveal() {
+        var $reveals = $('.scroll-reveal');
+        if ($reveals.length === 0) return;
+
+        if (window.IntersectionObserver) {
+          var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+          $reveals.each(function() {
+            observer.observe(this);
+          });
+        } else {
+          // 降级：直接全部显示
+          $reveals.addClass('visible');
+        }
+      }
+
+      // 初始化
+      initScrollReveal();
+
+      // ===== 赛道链接点击日志 =====
+      $('#link-track-01').on('click', function() {
+        console.log('导航至赛道：超导量子');
+      });
+      $('#link-track-02').on('click', function() {
+        console.log('导航至赛道：离子阱');
+      });
+      $('#link-track-03').on('click', function() {
+        console.log('导航至赛道：光量子');
+      });
+      $('#link-track-04').on('click', function() {
+        console.log('导航至赛道：量子通信与测量');
+      });
+      $('#link-all-jobs').on('click', function() {
+        console.log('导航至：全部岗位列表');
+      });
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

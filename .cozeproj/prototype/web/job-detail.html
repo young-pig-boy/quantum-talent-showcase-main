@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- 字体：Display(编辑式衬线) + Body(中文无衬线) + Label(等宽) -->
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet"/>
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色：地平线金 === */
+      --color-primary:              #d4a574;
+      --color-primary-container:    rgba(212, 165, 116, 0.12);
+      --color-on-primary:           #0a0a0b;
+      /* === 背景 / 表面：深空色阶 === */
+      --color-background:                 #0a0a0b;
+      --color-surface-container-lowest:   #0d0d0f;
+      --color-surface:                    #111113;
+      --color-surface-container:          #1a1a1d;
+      --color-surface-container-high:     #232326;
+      --color-surface-container-highest:  #2a2a2e;
+      /* === 文字 === */
+      --color-on-surface:           #f5f5f7;
+      --color-on-surface-variant:   #a1a1aa;
+      /* === 功能色 === */
+      --color-success:  #22c55e;
+      --color-error:    #ef4444;
+      --color-warning:  #f59e0b;
+      /* === 边框 === */
+      --color-outline:          rgba(255, 255, 255, 0.12);
+      --color-outline-variant:  rgba(255, 255, 255, 0.06);
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（深色主题，opacity 偏高） === */
+      --shadow-card:   0 2px 12px rgba(0,0,0,0.4);
+      --shadow-float:  0 10px 30px rgba(0,0,0,0.5);
+      --shadow-dialog: 0 25px 60px rgba(0,0,0,0.6);
+      /* === 字体角色 === */
+      --font-display: "Fraunces", "Noto Serif SC", Georgia, serif;
+      --font-sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      --font-label: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+
+  <!-- 液态玻璃导航样式 -->
+  <style>
+    .liquid-glass {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+    .liquid-glass:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .scroll-reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-reveal { opacity: 1; transform: none; transition: none; }
+      * { scroll-behavior: auto !important; }
+    }
+    .hero-overlay {
+      background: linear-gradient(180deg, rgba(10,10,11,0.3) 0%, rgba(10,10,11,0.6) 50%, rgba(10,10,11,0.95) 100%);
+    }
+    .hero-overlay-left {
+      background: linear-gradient(90deg, rgba(10,10,11,0.92) 0%, rgba(10,10,11,0.7) 40%, rgba(10,10,11,0.2) 70%, transparent 100%);
+    }
+  </style>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件 -->
+  <header class="fixed top-0 left-0 right-0 z-50 px-4 py-3 sm:px-6 transition-all duration-300" id="site-header">
+    <div class="mx-auto max-w-7xl">
+      <div class="liquid-glass flex items-center justify-between rounded-full px-4 py-2.5 sm:px-6">
+        <a href="home.html" class="flex items-center gap-2.5 text-on-surface transition-opacity hover:opacity-80">
+          <span class="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 font-label text-sm font-medium text-primary">Q</span>
+          <span class="font-sans text-sm font-medium tracking-tight sm:text-base">量子人才网络</span>
+        </a>
+        <nav class="hidden items-center gap-1 md:flex">
+          <a href="home.html" class="rounded-lg px-4 py-2 text-sm text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface" data-nav="home">首页</a>
+          <a href="tracks.html" class="rounded-lg px-4 py-2 text-sm text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface" data-nav="tracks">赛道</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2 text-sm text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface" data-nav="opportunities">岗位</a>
+        </nav>
+        <div class="flex items-center gap-3">
+          <a href="opportunities.html" class="hidden rounded-full bg-on-surface px-5 py-2 text-sm font-medium text-background transition-all hover:bg-primary hover:text-on-primary sm:inline-flex">探索岗位</a>
+          <button id="mobile-menu-btn" class="md:hidden text-on-surface p-1.5" aria-label="菜单">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+      <!-- 移动端菜单 -->
+      <div id="mobile-menu" class="hidden mt-2 liquid-glass rounded-2xl p-4 md:hidden">
+        <nav class="flex flex-col gap-1">
+          <a href="home.html" class="rounded-lg px-4 py-2.5 text-sm text-on-surface-variant hover:bg-white/5 hover:text-on-surface">首页</a>
+          <a href="tracks.html" class="rounded-lg px-4 py-2.5 text-sm text-on-surface-variant hover:bg-white/5 hover:text-on-surface">赛道</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2.5 text-sm text-on-surface-variant hover:bg-white/5 hover:text-on-surface">岗位</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2.5 text-sm font-medium text-primary">探索岗位</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <script>
+    $(function() {
+      var $btn = $('#mobile-menu-btn');
+      var $menu = $('#mobile-menu');
+      $btn.on('click', function() { $menu.slideToggle(200); });
+    });
+  </script>
+  <!-- @nav:end 导航组件 -->
+
+  <main class="max-w-7xl mx-auto">
+    <!-- @main-content:start -->
+
+    <!-- ====== 页面头部区域 ====== -->
+    <div class="px-4 pt-24 pb-6 sm:px-6 lg:px-8">
+      <div class="max-w-4xl">
+
+        <!-- 面包屑 -->
+        <nav class="flex items-center gap-1.5 font-label text-xs text-on-surface-variant/70" aria-label="面包屑">
+          <a href="home.html" class="hover:text-primary transition-colors">首页</a>
+          <span class="text-on-surface-variant/30">/</span>
+          <a href="tracks.html" class="hover:text-primary transition-colors">赛道</a>
+          <span class="text-on-surface-variant/30">/</span>
+          <a href="tracks-superconducting.html" class="hover:text-primary transition-colors">超导量子</a>
+          <span class="text-on-surface-variant/30">/</span>
+          <span class="text-on-surface">超导量子比特工程师</span>
+        </nav>
+
+        <!-- 岗位标题区域 -->
+        <div class="mt-8">
+          <p class="font-label text-sm text-on-surface-variant tracking-wide">Superconducting Qubit Engineer</p>
+          <div class="mt-3 flex items-start gap-4">
+            <h1 class="font-display text-4xl font-light leading-tight text-on-surface sm:text-5xl lg:text-6xl">超导量子比特工程师</h1>
+          </div>
+          <!-- 急招标签 -->
+          <div class="mt-4">
+            <span class="inline-flex items-center gap-1.5 rounded-sm bg-primary/15 px-2.5 py-1 font-label text-xs font-medium text-primary">
+              <span class="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"></span>
+              急招中
+            </span>
+          </div>
+        </div>
+
+        <!-- 岗位信息条 -->
+        <div class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 font-label text-sm text-on-surface-variant">
+          <span class="flex items-center gap-1.5">
+            <i data-lucide="building-2" class="w-3.5 h-3.5"></i>
+            <span>本源量子</span>
+          </span>
+          <span class="text-on-surface-variant/30">·</span>
+          <span class="flex items-center gap-1.5">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+            <span>合肥</span>
+          </span>
+          <span class="text-on-surface-variant/30">·</span>
+          <span class="flex items-center gap-1.5">
+            <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i>
+            <span>博士</span>
+          </span>
+          <span class="text-on-surface-variant/30">·</span>
+          <span class="flex items-center gap-1.5">
+            <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
+            <span>3年以上</span>
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ====== 岗位摘要 ====== -->
+    <div class="px-4 py-8 sm:px-6 lg:px-8 scroll-reveal">
+      <div class="max-w-4xl border-l-2 border-primary/30 pl-6">
+        <p class="font-display text-xl font-light leading-relaxed text-on-surface sm:text-2xl">
+          负责超导量子芯片的量子比特设计、制备工艺优化与低温测控实验，参与下一代量子计算原型机的研发。
+        </p>
+      </div>
+    </div>
+
+    <!-- ====== 主要内容区：左右分栏 ====== -->
+    <div class="px-4 py-8 sm:px-6 lg:px-8">
+      <div class="flex flex-col gap-12 lg:flex-row lg:gap-16">
+
+        <!-- ====== 左侧：岗位职责 + 任职要求（占 2/3）====== -->
+        <div class="flex-1 lg:max-w-2xl space-y-16">
+
+          <!-- 岗位职责 -->
+          <section class="scroll-reveal" id="section-responsibilities">
+            <div class="flex items-center gap-3 mb-8">
+              <h2 class="font-display text-2xl font-medium text-on-surface">岗位职责</h2>
+              <div class="flex-1 h-px bg-outline-variant"></div>
+            </div>
+            <ol class="space-y-6">
+              <!-- 职责-1 -->
+              <li class="flex gap-5">
+                <span class="font-label text-sm font-medium text-primary shrink-0 mt-0.5">01</span>
+                <p class="text-base leading-relaxed text-on-surface/90">设计并优化超导量子比特版图与参数；</p>
+              </li>
+              <!-- 职责-2 -->
+              <li class="flex gap-5">
+                <span class="font-label text-sm font-medium text-primary shrink-0 mt-0.5">02</span>
+                <p class="text-base leading-relaxed text-on-surface/90">搭建低温测控系统，完成量子比特表征实验；</p>
+              </li>
+              <!-- 职责-3 -->
+              <li class="flex gap-5">
+                <span class="font-label text-sm font-medium text-primary shrink-0 mt-0.5">03</span>
+                <p class="text-base leading-relaxed text-on-surface/90">与工艺团队协作，推进芯片制备良率提升；</p>
+              </li>
+              <!-- 职责-4 -->
+              <li class="flex gap-5">
+                <span class="font-label text-sm font-medium text-primary shrink-0 mt-0.5">04</span>
+                <p class="text-base leading-relaxed text-on-surface/90">参与量子纠错与门校准相关研究。</p>
+              </li>
+            </ol>
+          </section>
+
+          <!-- 任职要求 -->
+          <section class="scroll-reveal" id="section-requirements">
+            <div class="flex items-center gap-3 mb-8">
+              <h2 class="font-display text-2xl font-medium text-on-surface">任职要求</h2>
+              <div class="flex-1 h-px bg-outline-variant"></div>
+            </div>
+            <ol class="space-y-6">
+              <!-- 要求-1 -->
+              <li class="flex gap-5">
+                <span class="font-label text-sm font-medium text-primary shrink-0 mt-0.5">01</span>
+                <p class="text-base leading-relaxed text-on-surface/90">量子物理、凝聚态物理或相关专业博士学历；</p>
+              </li>
+              <!-- 要求-2 -->
+              <li class="flex gap-5">
+                <span class="font-label text-sm font-medium text-primary shrink-0 mt-0.5">02</span>
+                <p class="text-base leading-relaxed text-on-surface/90">熟悉超导量子计算实验或量子比特设计；</p>
+              </li>
+              <!-- 要求-3 -->
+              <li class="flex gap-5">
+                <span class="font-label text-sm font-medium text-primary shrink-0 mt-0.5">03</span>
+                <p class="text-base leading-relaxed text-on-surface/90">具备低温 dilution refrigerator 操作经验者优先；</p>
+              </li>
+              <!-- 要求-4 -->
+              <li class="flex gap-5">
+                <span class="font-label text-sm font-medium text-primary shrink-0 mt-0.5">04</span>
+                <p class="text-base leading-relaxed text-on-surface/90">良好的英文文献阅读与团队协作能力。</p>
+              </li>
+            </ol>
+          </section>
+        </div>
+
+        <!-- ====== 右侧：投递/咨询面板 + 技术标签（占 1/3）====== -->
+        <aside class="lg:w-80 lg:shrink-0">
+          <!-- 液态玻璃面板 -->
+          <div class="liquid-glass rounded-xl p-6 lg:sticky lg:top-24 scroll-reveal" id="apply-panel">
+
+            <!-- 面板标题 -->
+            <h3 class="font-display text-lg font-medium text-on-surface mb-5">投递与咨询</h3>
+
+            <!-- 邮箱投递 -->
+            <div class="mb-5">
+              <p class="font-label text-xs text-on-surface-variant mb-2">邮箱投递</p>
+              <button id="btn-copy-email" class="group flex items-center justify-between w-full rounded-lg bg-surface-container px-3 py-2.5 text-left transition-colors hover:bg-surface-container-high">
+                <span class="font-label text-xs text-on-surface truncate">talent@quantum-network.example</span>
+                <i data-lucide="copy" class="w-3.5 h-3.5 text-on-surface-variant shrink-0 ml-2 group-hover:text-primary transition-colors"></i>
+              </button>
+              <p id="email-copy-feedback" class="hidden font-label text-xs text-success mt-1.5">✓ 已复制到剪贴板</p>
+            </div>
+
+            <!-- 微信咨询 -->
+            <div class="mb-5">
+              <p class="font-label text-xs text-on-surface-variant mb-2">微信咨询</p>
+              <div class="flex items-center gap-3">
+                <!-- 二维码占位区 -->
+                <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-surface-container border border-outline/20">
+                  <i data-lucide="qr-code" class="w-8 h-8 text-on-surface-variant"></i>
+                </div>
+                <div class="min-w-0">
+                  <p class="font-label text-xs text-on-surface">QuantumTalent</p>
+                  <p class="font-sans text-xs text-on-surface-variant mt-1">扫码添加顾问微信</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 分享岗位 -->
+            <div class="mb-2">
+              <button id="btn-share" class="flex items-center justify-center gap-2 w-full rounded-lg bg-surface-container px-3 py-2.5 text-sm text-on-surface transition-colors hover:bg-surface-container-high">
+                <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                <span>分享岗位</span>
+              </button>
+              <!-- 分享链接展示区（默认隐藏） -->
+              <div id="share-link-area" class="hidden mt-2">
+                <div class="flex items-center justify-between rounded-lg bg-surface-container px-3 py-2">
+                  <span class="font-label text-xs text-on-surface-variant truncate" id="share-link-text">https://quantum-network.example/jobs/superconducting-qubit-engineer</span>
+                  <button id="btn-copy-share-link" class="shrink-0 ml-2 text-primary hover:text-primary/80 transition-colors">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+                <p id="share-copy-feedback" class="hidden font-label text-xs text-success mt-1.5">✓ 链接已复制</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 技术标签列表 -->
+          <div class="mt-6 scroll-reveal" id="tech-tags">
+            <p class="font-label text-xs text-on-surface-variant mb-3">技术标签</p>
+            <div class="flex flex-wrap gap-2">
+              <!-- 标签-1 -->
+              <span class="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 font-label text-xs text-primary/90">量子比特设计</span>
+              <!-- 标签-2 -->
+              <span class="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 font-label text-xs text-primary/90">低温测控</span>
+              <!-- 标签-3 -->
+              <span class="rounded-full border border-primary/20 bg-primary/5 px-3 py-1 font-label text-xs text-primary/90">微波工程</span>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+
+    <!-- ====== 底部导航链接 ====== -->
+    <div class="px-4 py-12 sm:px-6 lg:px-8 border-t border-outline-variant/30 mt-8">
+      <div class="max-w-4xl flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <a href="opportunities.html" class="group inline-flex items-center gap-2 font-sans text-sm text-on-surface-variant transition-colors hover:text-primary">
+          <i data-lucide="arrow-left" class="w-4 h-4 transition-transform group-hover:-translate-x-1"></i>
+          返回岗位列表
+        </a>
+        <a href="tracks-superconducting.html" class="group inline-flex items-center gap-2 font-sans text-sm text-on-surface-variant transition-colors hover:text-primary">
+          查看超导量子赛道
+          <i data-lucide="arrow-right" class="w-4 h-4 transition-transform group-hover:translate-x-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- ====== 移动端固定投递栏 ====== -->
+    <div class="fixed bottom-0 left-0 right-0 z-40 lg:hidden" id="mobile-apply-bar">
+      <div class="liquid-glass border-t border-white/10 px-4 py-3 flex items-center gap-3">
+        <div class="flex-1 min-w-0">
+          <p class="font-label text-xs text-on-surface-variant">本源量子 · 合肥</p>
+          <p class="font-sans text-sm text-on-surface truncate">超导量子比特工程师</p>
+        </div>
+        <button id="btn-mobile-apply" class="shrink-0 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-on-primary transition-opacity hover:opacity-90 active:scale-[0.98]">
+          立即投递
+        </button>
+      </div>
+    </div>
+
+    <!-- @main-content:end -->
+  </main>
+
+  <script>
+    $(function() {
+      // 设置导航激活态 — 岗位详情页属于"岗位"模块
+      $('nav a[data-nav="opportunities"]').addClass('bg-white/5 text-on-surface').attr('aria-current', 'page');
+
+      // ====== 邮箱复制功能 ======
+      $('#btn-copy-email').on('click', function() {
+        var email = 'talent@quantum-network.example';
+        // 尝试使用 Clipboard API 复制
+        // 后续实现步骤：
+        // 1. 优先使用 navigator.clipboard.writeText() 写入剪贴板
+        // 2. 降级方案：创建临时 textarea + document.execCommand('copy')
+        // 3. 复制成功后显示"已复制"反馈，2秒后自动隐藏
+        var $feedback = $('#email-copy-feedback');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(email).then(function() {
+            $feedback.removeClass('hidden');
+            setTimeout(function() { $feedback.addClass('hidden'); }, 2000);
+          }).catch(function() {
+            // 降级方案
+            var $temp = $('<textarea>').val(email).appendTo('body').select();
+            document.execCommand('copy');
+            $temp.remove();
+            $feedback.removeClass('hidden');
+            setTimeout(function() { $feedback.addClass('hidden'); }, 2000);
+          });
+        } else {
+          var $temp2 = $('<textarea>').val(email).appendTo('body').select();
+          document.execCommand('copy');
+          $temp2.remove();
+          $feedback.removeClass('hidden');
+          setTimeout(function() { $feedback.addClass('hidden'); }, 2000);
+        }
+      });
+
+      // ====== 分享按钮 — 展开/收起分享链接 ======
+      $('#btn-share').on('click', function() {
+        // 后续实现步骤：
+        // 1. 点击分享按钮时 toggle 显示下方的链接区域
+        // 2. 如果浏览器支持 Web Share API，可直接调用 navigator.share() 弹出原生分享面板
+        // 3. 降级方案：展示页面链接供用户手动复制
+        $('#share-link-area').slideToggle(200);
+      });
+
+      // ====== 分享链接复制功能 ======
+      $('#btn-copy-share-link').on('click', function() {
+        var link = $('#share-link-text').text();
+        var $feedback = $('#share-copy-feedback');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(link).then(function() {
+            $feedback.removeClass('hidden');
+            setTimeout(function() { $feedback.addClass('hidden'); }, 2000);
+          }).catch(function() {
+            var $temp = $('<textarea>').val(link).appendTo('body').select();
+            document.execCommand('copy');
+            $temp.remove();
+            $feedback.removeClass('hidden');
+            setTimeout(function() { $feedback.addClass('hidden'); }, 2000);
+          });
+        } else {
+          var $temp2 = $('<textarea>').val(link).appendTo('body').select();
+          document.execCommand('copy');
+          $temp2.remove();
+          $feedback.removeClass('hidden');
+          setTimeout(function() { $feedback.addClass('hidden'); }, 2000);
+        }
+      });
+
+      // ====== 移动端投递按钮 — 滚动到投递面板 ======
+      $('#btn-mobile-apply').on('click', function() {
+        // 后续实现步骤：
+        // 1. 在移动端点击"立即投递"时，平滑滚动到右侧投递面板（或弹出底部 sheet 展示投递信息）
+        // 2. 可在此处触发邮件客户端 mailto: 链接，或跳转到在线投递表单页
+        var $panel = $('#apply-panel');
+        if ($panel.length) {
+          $('html, body').animate({ scrollTop: $panel.offset().top - 80 }, 500);
+        }
+        console.log('移动端投递按钮点击 — 应跳转投递流程或展开投递面板');
+      });
+
+      // ====== Scroll Reveal 渐入动画 ======
+      // 后续实现步骤：
+      // 1. 使用 IntersectionObserver 监听 .scroll-reveal 元素
+      // 2. 元素进入视口时添加 .visible 类触发 CSS 过渡
+      // 3. 支持 prefers-reduced-motion 时直接显示所有元素
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        $('.scroll-reveal').each(function() {
+          observer.observe(this);
+        });
+      } else {
+        // 降级：直接显示所有元素
+        $('.scroll-reveal').addClass('visible');
+      }
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

@@ -1,0 +1,194 @@
+'use client';
+
+import Link from 'next/link';
+import { ArrowRight, RefreshCw, Zap } from 'lucide-react';
+import { ScrollReveal } from '@/components/ui/scroll-reveal';
+import { getTrackById } from '@/lib/data';
+import { trackEvent } from '@/lib/analytics';
+import { usePublicJobs, isUrgentActive, type PublicJob } from '@/hooks/use-public-jobs';
+import { useLanguageMode } from '@/lib/language-mode';
+import { localizeCity, localizeDisplayValue } from '@/lib/localized-helpers';
+import { JobCode } from '@/components/job/job-code';
+
+export function JobCenterSection() {
+  const { jobs, loading, error, retry } = usePublicJobs({ limit: 5 });
+  const { mode } = useLanguageMode();
+
+  return (
+    <div id="job-center">
+      {/* Section header */}
+      <ScrollReveal className="mb-12">
+        <div className="flex items-center gap-3 mb-4">
+          <span className="font-mono text-sm font-medium tracking-[0.15em] text-accent/60 uppercase">
+            01
+          </span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+        {mode !== 'en' && (
+          <p className="mb-3 font-mono text-sm font-medium tracking-[0.2em] text-accent uppercase">
+            Job Center
+          </p>
+        )}
+        <h3 className="text-2xl font-bold text-foreground sm:text-3xl lg:text-4xl">
+          {mode === 'en' ? 'Job Center' : '岗位中心'}
+        </h3>
+        <p className="mt-2 text-base leading-relaxed text-muted-foreground">
+          {mode === 'en'
+            ? 'Browse all open quantum technology positions'
+            : '浏览全部正在开放的量子科技岗位'}
+        </p>
+      </ScrollReveal>
+
+      {/* Loading state */}
+      {loading && (
+        <div className="border-t border-white/[0.06] py-12 text-center">
+          <p className="text-sm text-muted-foreground">
+            {mode === 'en' ? 'Loading...' : '加载中...'}
+          </p>
+        </div>
+      )}
+
+      {/* Error state */}
+      {!loading && error && (
+        <ScrollReveal>
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-8 text-center">
+            <p className="mb-2 text-sm font-medium text-foreground">
+              {mode === 'en' ? 'Failed to load positions' : '岗位数据加载失败'}
+            </p>
+            <p className="mb-4 text-xs text-muted-foreground">{error}</p>
+            <button
+              onClick={retry}
+              className="inline-flex items-center gap-2 rounded-full bg-surface-glass-hover px-4 py-2 text-sm font-medium text-foreground transition-all hover:bg-surface-glass-hover"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              {mode === 'en' ? 'Retry' : '重新加载'}
+            </button>
+          </div>
+        </ScrollReveal>
+      )}
+
+      {/* Empty state */}
+      {!loading && !error && jobs.length === 0 && (
+        <ScrollReveal>
+          <div className="rounded-2xl border border-border bg-card/50 p-10 text-center">
+            <p className="mb-2 text-sm font-medium text-foreground">
+              {mode === 'en' ? 'No Open Positions' : '暂无开放岗位'}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {mode === 'en'
+                ? 'There are no open positions at the moment. Please check back later.'
+                : '当前没有正在招聘的岗位，请稍后再来看看'}
+            </p>
+          </div>
+        </ScrollReveal>
+      )}
+
+      {/* Magazine-style listing */}
+      {!loading && !error && jobs.length > 0 && (
+        <div className="border-t border-white/[0.06]">
+          {jobs.map((job, index) => (
+            <JobCenterRow key={job.id} job={job} index={index} />
+          ))}
+        </div>
+      )}
+
+      {/* View all jobs CTA */}
+      {!loading && (
+        <div className="mt-6 text-center">
+          <Link
+            href="/opportunities"
+            className="inline-flex items-center gap-2 rounded-full bg-surface-glass px-5 py-2.5 text-sm font-medium text-foreground backdrop-blur-sm transition-all duration-300 hover:bg-surface-glass-hover focus:outline-none focus:ring-2 focus:ring-accent/30"
+          >
+            {mode === 'en' ? 'View All Jobs' : '浏览全部正在开放的量子科技岗位'}
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function JobCenterRow({ job, index }: { job: PublicJob; index: number }) {
+  const track = job.track ? getTrackById(job.track) : null;
+  const directionDisplay = job.direction || track?.name || '';
+  const showUrgent = isUrgentActive(job);
+  const { mode } = useLanguageMode();
+
+  return (
+    <ScrollReveal key={job.id} delay={index * 0.05}>
+      <Link
+        href={`/jobs/${job.slug}`}
+        onClick={() => trackEvent('job_view', { job_id: job.id, source: 'job_center' })}
+        className="group grid gap-3 border-b border-white/[0.06] py-5 transition-colors hover:bg-white/[0.015] md:grid-cols-12 md:items-center md:gap-6 md:py-6"
+      >
+        {/* Index number */}
+        <div className="md:col-span-1">
+          <span className="font-mono text-xs text-muted-foreground">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+        </div>
+
+        {/* Job title + track + direction + urgency */}
+        <div className="md:col-span-5">
+          <div className="mb-1 flex flex-wrap items-center gap-2">
+            {track && (
+              <span className="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+                {track.englishName}
+              </span>
+            )}
+            {showUrgent && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5">
+                <Zap className="h-2.5 w-2.5 text-amber-400" />
+                <span className="text-[10px] font-medium text-amber-400 uppercase tracking-wider">
+                  {mode === 'en' ? 'Urgent' : '急招'}
+                </span>
+              </span>
+            )}
+            {job.featured && (
+              <span className="inline-flex items-center rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5">
+                <span className="text-[10px] font-medium text-accent uppercase tracking-wider">
+                  {mode === 'en' ? 'Featured' : '精选'}
+                </span>
+              </span>
+            )}
+          </div>
+          <h4 className="text-base font-medium text-foreground transition-colors group-hover:text-accent-light sm:text-lg">
+            {job.title}
+          </h4>
+          {(directionDisplay || job.public_job_code) && (
+            <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5">
+              {directionDisplay && (
+                <p className="text-xs text-muted-foreground">{directionDisplay}</p>
+              )}
+              {job.public_job_code && <JobCode code={job.public_job_code} />}
+            </div>
+          )}
+        </div>
+
+        {/* Location */}
+        <div className="md:col-span-2">
+          <p className="text-sm text-muted-foreground">
+            <span className="text-xs text-muted-foreground/60">{mode === 'en' ? 'Location:' : '地点：'}</span>{localizeCity(job.city, mode)}
+          </p>
+        </div>
+
+        {/* Education / Experience */}
+        <div className="md:col-span-2">
+          <p className="text-sm text-muted-foreground">
+            {job.education && <><span className="text-xs text-muted-foreground/60">{mode === 'en' ? 'Education:' : '学历：'}</span>{job.education}</>}
+          </p>
+          {job.experience && (
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              <span className="text-xs text-muted-foreground/60">{mode === 'en' ? 'Experience:' : '经验：'}</span>{localizeDisplayValue(job.experience, mode)}
+            </p>
+          )}
+        </div>
+
+        {/* Arrow */}
+        <div className="flex items-center justify-end md:col-span-2">
+          <ArrowRight className="h-4 w-4 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-accent" />
+        </div>
+      </Link>
+    </ScrollReveal>
+  );
+}

@@ -1,0 +1,58 @@
+import type { Partner } from '@/lib/types';
+
+export const partners: Partner[] = [
+  {
+    id: 'origin-quantum',
+    name: '本源量子',
+    englishName: 'Origin Quantum',
+    logo: '',
+    type: 'enterprise',
+    link: '#',
+    order: 1,
+  },
+  {
+    id: 'spin-q',
+    name: '旋量量子',
+    englishName: 'SpinQ',
+    logo: '',
+    type: 'enterprise',
+    link: '#',
+    order: 2,
+  },
+  {
+    id: 'ustc',
+    name: '中国科学技术大学',
+    englishName: 'USTC',
+    logo: '',
+    type: 'research',
+    link: '#',
+    order: 3,
+  },
+  {
+    id: 'cas',
+    name: '中国科学院',
+    englishName: 'CAS',
+    logo: '',
+    type: 'research',
+    link: '#',
+    order: 4,
+  },
+  {
+    id: 'baidu-quantum',
+    name: '百度量子计算研究所',
+    englishName: 'Baidu Quantum',
+    logo: '',
+    type: 'enterprise',
+    link: '#',
+    order: 5,
+  },
+  {
+    id: 'alibaba-quantum',
+    name: '达摩院量子实验室',
+    englishName: 'DAMO Academy',
+    logo: '',
+    type: 'enterprise',
+    link: '#',
+    order: 6,
+  },
+];

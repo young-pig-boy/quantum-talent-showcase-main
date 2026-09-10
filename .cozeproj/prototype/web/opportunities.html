@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- 字体：Display(编辑式衬线) + Body(中文无衬线) + Label(等宽) -->
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet"/>
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色：地平线金 === */
+      --color-primary:              #d4a574;
+      --color-primary-container:    rgba(212, 165, 116, 0.12);
+      --color-on-primary:           #0a0a0b;
+      /* === 背景 / 表面：深空色阶 === */
+      --color-background:                 #0a0a0b;
+      --color-surface-container-lowest:   #0d0d0f;
+      --color-surface:                    #111113;
+      --color-surface-container:          #1a1a1d;
+      --color-surface-container-high:     #232326;
+      --color-surface-container-highest:  #2a2a2e;
+      /* === 文字 === */
+      --color-on-surface:           #f5f5f7;
+      --color-on-surface-variant:   #a1a1aa;
+      /* === 功能色 === */
+      --color-success:  #22c55e;
+      --color-error:    #ef4444;
+      --color-warning:  #f59e0b;
+      /* === 边框 === */
+      --color-outline:          rgba(255, 255, 255, 0.12);
+      --color-outline-variant:  rgba(255, 255, 255, 0.06);
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（深色主题，opacity 偏高） === */
+      --shadow-card:   0 2px 12px rgba(0,0,0,0.4);
+      --shadow-float:  0 10px 30px rgba(0,0,0,0.5);
+      --shadow-dialog: 0 25px 60px rgba(0,0,0,0.6);
+      /* === 字体角色 === */
+      --font-display: "Fraunces", "Noto Serif SC", Georgia, serif;
+      --font-sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      --font-label: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+
+  <!-- 液态玻璃导航样式 -->
+  <style>
+    .liquid-glass {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+    .liquid-glass:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .scroll-reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-reveal { opacity: 1; transform: none; transition: none; }
+      * { scroll-behavior: auto !important; }
+    }
+    .hero-overlay {
+      background: linear-gradient(180deg, rgba(10,10,11,0.3) 0%, rgba(10,10,11,0.6) 50%, rgba(10,10,11,0.95) 100%);
+    }
+    .hero-overlay-left {
+      background: linear-gradient(90deg, rgba(10,10,11,0.92) 0%, rgba(10,10,11,0.7) 40%, rgba(10,10,11,0.2) 70%, transparent 100%);
+    }
+    /* 岗位行 hover 亮起 */
+    .job-row { transition: background-color 0.25s ease; }
+    .job-row:hover { background-color: rgba(255, 255, 255, 0.035); }
+  </style>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件 -->
+  <header class="fixed top-0 left-0 right-0 z-50 px-4 py-3 sm:px-6 transition-all duration-300" id="site-header">
+    <div class="mx-auto max-w-7xl">
+      <div class="liquid-glass flex items-center justify-between rounded-full px-4 py-2.5 sm:px-6">
+        <a href="home.html" class="flex items-center gap-2.5 text-on-surface transition-opacity hover:opacity-80">
+          <span class="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 font-label text-sm font-medium text-primary">Q</span>
+          <span class="font-sans text-sm font-medium tracking-tight sm:text-base">量子人才网络</span>
+        </a>
+        <nav class="hidden items-center gap-1 md:flex">
+          <a href="home.html" class="rounded-lg px-4 py-2 text-sm text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface" data-nav="home">首页</a>
+          <a href="tracks.html" class="rounded-lg px-4 py-2 text-sm text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface" data-nav="tracks">赛道</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2 text-sm text-primary bg-primary/10" data-nav="opportunities" aria-current="page">岗位</a>
+        </nav>
+        <div class="flex items-center gap-3">
+          <a href="opportunities.html" class="hidden rounded-full bg-on-surface px-5 py-2 text-sm font-medium text-background transition-all hover:bg-primary hover:text-on-primary sm:inline-flex">探索岗位</a>
+          <button id="mobile-menu-btn" class="md:hidden text-on-surface p-1.5" aria-label="菜单">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+      <!-- 移动端菜单 -->
+      <div id="mobile-menu" class="hidden mt-2 liquid-glass rounded-2xl p-4 md:hidden">
+        <nav class="flex flex-col gap-1">
+          <a href="home.html" class="rounded-lg px-4 py-2.5 text-sm text-on-surface-variant hover:bg-white/5 hover:text-on-surface">首页</a>
+          <a href="tracks.html" class="rounded-lg px-4 py-2.5 text-sm text-on-surface-variant hover:bg-white/5 hover:text-on-surface">赛道</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2.5 text-sm font-medium text-primary">岗位</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2.5 text-sm font-medium text-primary">探索岗位</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <script>
+    $(function() {
+      var $btn = $('#mobile-menu-btn');
+      var $menu = $('#mobile-menu');
+      $btn.on('click', function() { $menu.slideToggle(200); });
+    });
+  </script>
+  <!-- @nav:end 导航组件 -->
+
+  <main class="max-w-7xl mx-auto">
+    <!-- @main-content:start -->
+
+    <!-- 页面头部 -->
+    <section class="scroll-reveal px-4 sm:px-6 lg:px-8 pt-32 pb-10">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="h-px w-8 bg-primary/60"></span>
+        <span class="font-label text-xs tracking-[0.25em] text-primary uppercase">Opportunities</span>
+      </div>
+      <h1 class="font-display text-5xl sm:text-6xl font-light leading-[1.05] text-on-surface tracking-tight">
+        岗位中心
+      </h1>
+      <p class="mt-5 max-w-2xl text-base text-on-surface-variant leading-relaxed">
+        探索量子科技领域的前沿岗位机会，连接顶尖研究机构与企业。
+      </p>
+      <!-- 统计行：编辑式元信息 -->
+      <div class="mt-8 flex flex-wrap items-center gap-x-8 gap-y-2 font-label text-xs text-on-surface-variant">
+        <span><span class="text-on-surface font-medium" id="job-total-count">10</span> 个开放岗位</span>
+        <span class="text-outline-variant">/</span>
+        <span>4 条赛道</span>
+        <span class="text-outline-variant">/</span>
+        <span>4 座城市</span>
+        <span class="text-outline-variant">/</span>
+        <span>持续更新中</span>
+      </div>
+    </section>
+
+    <!-- 搜索与筛选区 -->
+    <section class="scroll-reveal px-4 sm:px-6 lg:px-8 pb-8">
+      <div class="liquid-glass rounded-2xl p-5 sm:p-6">
+        <!-- 搜索框 -->
+        <div class="relative">
+          <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant"></i>
+          <input id="search-input" type="text" autocomplete="off"
+            placeholder="搜索岗位名称、公司或技术关键词…"
+            class="w-full bg-surface-container border-none rounded-lg pl-11 pr-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+        </div>
+
+        <!-- 筛选控件 -->
+        <div class="mt-5 flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6">
+          <!-- 赛道筛选 -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-label text-[10px] tracking-[0.2em] text-on-surface-variant/60 uppercase mr-1">Track</span>
+            <button class="track-btn rounded-full px-3.5 py-1.5 text-xs font-medium transition-all border-none bg-primary text-on-primary" data-track="all">全部</button>
+            <button class="track-btn rounded-full px-3.5 py-1.5 text-xs font-medium transition-all border-none bg-surface-container text-on-surface-variant hover:text-on-surface" data-track="超导量子">超导量子</button>
+            <button class="track-btn rounded-full px-3.5 py-1.5 text-xs font-medium transition-all border-none bg-surface-container text-on-surface-variant hover:text-on-surface" data-track="离子阱">离子阱</button>
+            <button class="track-btn rounded-full px-3.5 py-1.5 text-xs font-medium transition-all border-none bg-surface-container text-on-surface-variant hover:text-on-surface" data-track="光量子">光量子</button>
+            <button class="track-btn rounded-full px-3.5 py-1.5 text-xs font-medium transition-all border-none bg-surface-container text-on-surface-variant hover:text-on-surface" data-track="量子通信与测量">量子通信与测量</button>
+          </div>
+
+          <!-- 城市筛选 -->
+          <div class="flex items-center gap-2 lg:ml-auto">
+            <span class="font-label text-[10px] tracking-[0.2em] text-on-surface-variant/60 uppercase mr-1">City</span>
+            <div class="relative">
+              <select id="city-filter"
+                class="appearance-none bg-surface-container border-none rounded-lg pl-3.5 pr-9 py-1.5 text-xs text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors cursor-pointer">
+                <option value="all">全部城市</option>
+                <option value="北京">北京</option>
+                <option value="合肥">合肥</option>
+                <option value="杭州">杭州</option>
+                <option value="上海">上海</option>
+              </select>
+              <i data-lucide="chevron-down" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-on-surface-variant pointer-events-none"></i>
+            </div>
+          </div>
+
+          <!-- 急招开关 -->
+          <div class="flex items-center gap-2.5">
+            <span class="font-label text-[10px] tracking-[0.2em] text-on-surface-variant/60 uppercase">Urgent</span>
+            <button id="urgent-toggle" class="relative h-6 w-11 rounded-full bg-surface-container transition-colors duration-200" aria-pressed="false" role="switch" aria-label="仅看急招">
+              <span class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-on-surface-variant transition-all duration-200" id="urgent-knob"></span>
+            </button>
+            <span class="text-xs text-on-surface-variant">仅看急招</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 岗位列表 -->
+    <section class="scroll-reveal px-4 sm:px-6 lg:px-8 pb-16">
+      <!-- 列表表头 -->
+      <div class="hidden lg:grid grid-cols-[60px_1fr_320px_280px] gap-6 px-4 pb-3 border-b border-outline-variant/10">
+        <span class="font-label text-[10px] tracking-[0.2em] text-on-surface-variant/50 uppercase">No.</span>
+        <span class="font-label text-[10px] tracking-[0.2em] text-on-surface-variant/50 uppercase">岗位 / Position</span>
+        <span class="font-label text-[10px] tracking-[0.2em] text-on-surface-variant/50 uppercase">机构 · 要求</span>
+        <span class="font-label text-[10px] tracking-[0.2em] text-on-surface-variant/50 uppercase">技术栈</span>
+      </div>
+
+      <!-- 岗位列表容器 -->
+      <div id="job-list">
+
+        <!-- 列表-岗位1 超导量子比特工程师 -->
+        <a href="job-detail.html?id=1" class="job-row group grid grid-cols-1 lg:grid-cols-[60px_1fr_320px_280px] gap-3 lg:gap-6 px-4 py-5 border-b border-outline-variant/10" data-track="超导量子" data-city="合肥" data-urgent="true" data-search="超导量子比特工程师 superconducting qubit engineer 本源量子 量子比特设计 低温测控 微波工程">
+          <span class="font-label text-sm text-on-surface-variant/50 lg:pt-1">01</span>
+          <div>
+            <div class="font-sans text-base font-medium text-on-surface group-hover:text-primary transition-colors">超导量子比特工程师</div>
+            <div class="font-label text-[11px] text-on-surface-variant/60 mt-1 tracking-wide">Superconducting Qubit Engineer</div>
+          </div>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span class="text-sm text-on-surface/90">本源量子</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">合肥</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">博士</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">3年以上</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">量子比特设计</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">低温测控</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">微波工程</span>
+            <span class="inline-flex items-center gap-1 font-label text-[10px] text-error bg-error/10 px-1.5 py-0.5 rounded ml-auto"><i data-lucide="zap" class="w-2.5 h-2.5"></i>急招</span>
+            <span class="font-label text-xs text-primary group-hover:translate-x-0.5 transition-transform w-full lg:w-auto lg:ml-2 mt-1 lg:mt-0">查看 →</span>
+          </div>
+        </a>
+
+        <!-- 列表-岗位2 低温微波工程师 -->
+        <a href="job-detail.html?id=2" class="job-row group grid grid-cols-1 lg:grid-cols-[60px_1fr_320px_280px] gap-3 lg:gap-6 px-4 py-5 border-b border-outline-variant/10" data-track="超导量子" data-city="北京" data-urgent="false" data-search="低温微波工程师 cryogenic microwave engineer 旋量量子 微波工程 低温电子 射频设计">
+          <span class="font-label text-sm text-on-surface-variant/50 lg:pt-1">02</span>
+          <div>
+            <div class="font-sans text-base font-medium text-on-surface group-hover:text-primary transition-colors">低温微波工程师</div>
+            <div class="font-label text-[11px] text-on-surface-variant/60 mt-1 tracking-wide">Cryogenic Microwave Engineer</div>
+          </div>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span class="text-sm text-on-surface/90">旋量量子</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">北京</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">硕士及以上</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">2年以上</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">微波工程</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">低温电子</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">射频设计</span>
+            <span class="font-label text-xs text-primary group-hover:translate-x-0.5 transition-transform w-full lg:w-auto lg:ml-auto mt-1 lg:mt-0">查看 →</span>
+          </div>
+        </a>
+
+        <!-- 列表-岗位3 离子阱量子物理学家 -->
+        <a href="job-detail.html?id=3" class="job-row group grid grid-cols-1 lg:grid-cols-[60px_1fr_320px_280px] gap-3 lg:gap-6 px-4 py-5 border-b border-outline-variant/10" data-track="离子阱" data-city="北京" data-urgent="true" data-search="离子阱量子物理学家 ion trap quantum physicist 中国科学院 离子阱 量子门 激光系统">
+          <span class="font-label text-sm text-on-surface-variant/50 lg:pt-1">03</span>
+          <div>
+            <div class="font-sans text-base font-medium text-on-surface group-hover:text-primary transition-colors">离子阱量子物理学家</div>
+            <div class="font-label text-[11px] text-on-surface-variant/60 mt-1 tracking-wide">Ion Trap Quantum Physicist</div>
+          </div>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span class="text-sm text-on-surface/90">中国科学院</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">北京</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">博士</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">应届及以上</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">离子阱</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">量子门</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">激光系统</span>
+            <span class="inline-flex items-center gap-1 font-label text-[10px] text-error bg-error/10 px-1.5 py-0.5 rounded ml-auto"><i data-lucide="zap" class="w-2.5 h-2.5"></i>急招</span>
+            <span class="font-label text-xs text-primary group-hover:translate-x-0.5 transition-transform w-full lg:w-auto lg:ml-2 mt-1 lg:mt-0">查看 →</span>
+          </div>
+        </a>
+
+        <!-- 列表-岗位4 激光系统工程师 -->
+        <a href="job-detail.html?id=4" class="job-row group grid grid-cols-1 lg:grid-cols-[60px_1fr_320px_280px] gap-3 lg:gap-6 px-4 py-5 border-b border-outline-variant/10" data-track="离子阱" data-city="合肥" data-urgent="false" data-search="激光系统工程师 laser systems engineer 中国科学技术大学 激光系统 光学集成 精密控制">
+          <span class="font-label text-sm text-on-surface-variant/50 lg:pt-1">04</span>
+          <div>
+            <div class="font-sans text-base font-medium text-on-surface group-hover:text-primary transition-colors">激光系统工程师</div>
+            <div class="font-label text-[11px] text-on-surface-variant/60 mt-1 tracking-wide">Laser Systems Engineer</div>
+          </div>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span class="text-sm text-on-surface/90">中国科学技术大学</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">合肥</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">硕士及以上</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">2年以上</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">激光系统</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">光学集成</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">精密控制</span>
+            <span class="font-label text-xs text-primary group-hover:translate-x-0.5 transition-transform w-full lg:w-auto lg:ml-auto mt-1 lg:mt-0">查看 →</span>
+          </div>
+        </a>
+
+        <!-- 列表-岗位5 光量子科学家 -->
+        <a href="job-detail.html?id=5" class="job-row group grid grid-cols-1 lg:grid-cols-[60px_1fr_320px_280px] gap-3 lg:gap-6 px-4 py-5 border-b border-outline-variant/10" data-track="光量子" data-city="北京" data-urgent="true" data-search="光量子科学家 photonic quantum scientist 百度量子计算研究所 单光子源 线性光学 量子协议">
+          <span class="font-label text-sm text-on-surface-variant/50 lg:pt-1">05</span>
+          <div>
+            <div class="font-sans text-base font-medium text-on-surface group-hover:text-primary transition-colors">光量子科学家</div>
+            <div class="font-label text-[11px] text-on-surface-variant/60 mt-1 tracking-wide">Photonic Quantum Scientist</div>
+          </div>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span class="text-sm text-on-surface/90">百度量子计算研究所</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">北京</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">博士</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">3年以上</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">单光子源</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">线性光学</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">量子协议</span>
+            <span class="inline-flex items-center gap-1 font-label text-[10px] text-error bg-error/10 px-1.5 py-0.5 rounded ml-auto"><i data-lucide="zap" class="w-2.5 h-2.5"></i>急招</span>
+            <span class="font-label text-xs text-primary group-hover:translate-x-0.5 transition-transform w-full lg:w-auto lg:ml-2 mt-1 lg:mt-0">查看 →</span>
+          </div>
+        </a>
+
+        <!-- 列表-岗位6 集成光路工程师 -->
+        <a href="job-detail.html?id=6" class="job-row group grid grid-cols-1 lg:grid-cols-[60px_1fr_320px_280px] gap-3 lg:gap-6 px-4 py-5 border-b border-outline-variant/10" data-track="光量子" data-city="杭州" data-urgent="false" data-search="集成光路工程师 integrated photonics engineer 达摩院量子实验室 集成光路 硅光芯片 封装测试">
+          <span class="font-label text-sm text-on-surface-variant/50 lg:pt-1">06</span>
+          <div>
+            <div class="font-sans text-base font-medium text-on-surface group-hover:text-primary transition-colors">集成光路工程师</div>
+            <div class="font-label text-[11px] text-on-surface-variant/60 mt-1 tracking-wide">Integrated Photonics Engineer</div>
+          </div>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span class="text-sm text-on-surface/90">达摩院量子实验室</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">杭州</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">硕士及以上</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">2年以上</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">集成光路</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">硅光芯片</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">封装测试</span>
+            <span class="font-label text-xs text-primary group-hover:translate-x-0.5 transition-transform w-full lg:w-auto lg:ml-auto mt-1 lg:mt-0">查看 →</span>
+          </div>
+        </a>
+
+        <!-- 列表-岗位7 量子密码研究员 -->
+        <a href="job-detail.html?id=7" class="job-row group grid grid-cols-1 lg:grid-cols-[60px_1fr_320px_280px] gap-3 lg:gap-6 px-4 py-5 border-b border-outline-variant/10" data-track="量子通信与测量" data-city="合肥" data-urgent="true" data-search="量子密码研究员 quantum cryptography researcher 国盾量子 量子密钥分发 量子随机数 密码学">
+          <span class="font-label text-sm text-on-surface-variant/50 lg:pt-1">07</span>
+          <div>
+            <div class="font-sans text-base font-medium text-on-surface group-hover:text-primary transition-colors">量子密码研究员</div>
+            <div class="font-label text-[11px] text-on-surface-variant/60 mt-1 tracking-wide">Quantum Cryptography Researcher</div>
+          </div>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span class="text-sm text-on-surface/90">国盾量子</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">合肥</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">博士</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">2年以上</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">量子密钥分发</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">量子随机数</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">密码学</span>
+            <span class="inline-flex items-center gap-1 font-label text-[10px] text-error bg-error/10 px-1.5 py-0.5 rounded ml-auto"><i data-lucide="zap" class="w-2.5 h-2.5"></i>急招</span>
+            <span class="font-label text-xs text-primary group-hover:translate-x-0.5 transition-transform w-full lg:w-auto lg:ml-2 mt-1 lg:mt-0">查看 →</span>
+          </div>
+        </a>
+
+        <!-- 列表-岗位8 量子传感工程师 -->
+        <a href="job-detail.html?id=8" class="job-row group grid grid-cols-1 lg:grid-cols-[60px_1fr_320px_280px] gap-3 lg:gap-6 px-4 py-5 border-b border-outline-variant/10" data-track="量子通信与测量" data-city="上海" data-urgent="false" data-search="量子传感工程师 quantum sensing engineer 中国科学院 量子传感 精密测量 nv色心">
+          <span class="font-label text-sm text-on-surface-variant/50 lg:pt-1">08</span>
+          <div>
+            <div class="font-sans text-base font-medium text-on-surface group-hover:text-primary transition-colors">量子传感工程师</div>
+            <div class="font-label text-[11px] text-on-surface-variant/60 mt-1 tracking-wide">Quantum Sensing Engineer</div>
+          </div>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span class="text-sm text-on-surface/90">中国科学院</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">上海</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">硕士及以上</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">3年以上</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">量子传感</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">精密测量</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">NV色心</span>
+            <span class="font-label text-xs text-primary group-hover:translate-x-0.5 transition-transform w-full lg:w-auto lg:ml-auto mt-1 lg:mt-0">查看 →</span>
+          </div>
+        </a>
+
+        <!-- 列表-岗位9 量子算法研究员 -->
+        <a href="job-detail.html?id=9" class="job-row group grid grid-cols-1 lg:grid-cols-[60px_1fr_320px_280px] gap-3 lg:gap-6 px-4 py-5 border-b border-outline-variant/10" data-track="超导量子" data-city="合肥" data-urgent="false" data-search="量子算法研究员 quantum algorithm researcher 本源量子 量子算法 nisq 量子优化">
+          <span class="font-label text-sm text-on-surface-variant/50 lg:pt-1">09</span>
+          <div>
+            <div class="font-sans text-base font-medium text-on-surface group-hover:text-primary transition-colors">量子算法研究员</div>
+            <div class="font-label text-[11px] text-on-surface-variant/60 mt-1 tracking-wide">Quantum Algorithm Researcher</div>
+          </div>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span class="text-sm text-on-surface/90">本源量子</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">合肥</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">博士</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">应届及以上</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">量子算法</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">NISQ</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">量子优化</span>
+            <span class="font-label text-xs text-primary group-hover:translate-x-0.5 transition-transform w-full lg:w-auto lg:ml-auto mt-1 lg:mt-0">查看 →</span>
+          </div>
+        </a>
+
+        <!-- 列表-岗位10 量子软件工程师 -->
+        <a href="job-detail.html?id=10" class="job-row group grid grid-cols-1 lg:grid-cols-[60px_1fr_320px_280px] gap-3 lg:gap-6 px-4 py-5 border-b border-outline-variant/10" data-track="超导量子" data-city="北京" data-urgent="false" data-search="量子软件工程师 quantum software engineer 百度量子计算研究所 量子软件 编译器 python c++">
+          <span class="font-label text-sm text-on-surface-variant/50 lg:pt-1">10</span>
+          <div>
+            <div class="font-sans text-base font-medium text-on-surface group-hover:text-primary transition-colors">量子软件工程师</div>
+            <div class="font-label text-[11px] text-on-surface-variant/60 mt-1 tracking-wide">Quantum Software Engineer</div>
+          </div>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <span class="text-sm text-on-surface/90">百度量子计算研究所</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">北京</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">本科及以上</span>
+            <span class="font-label text-[11px] text-on-surface-variant bg-surface-container px-1.5 py-0.5 rounded">2年以上</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">量子软件</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">编译器</span>
+            <span class="font-label text-[11px] text-primary/80 bg-primary/10 px-2 py-0.5 rounded">Python/C++</span>
+            <span class="font-label text-xs text-primary group-hover:translate-x-0.5 transition-transform w-full lg:w-auto lg:ml-auto mt-1 lg:mt-0">查看 →</span>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- 空状态（默认隐藏，JS控制显示） -->
+      <div id="empty-state" class="hidden flex-col items-center justify-center py-20 text-center">
+        <div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center mb-5">
+          <i data-lucide="search-x" class="w-6 h-6 text-on-surface-variant"></i>
+        </div>
+        <p class="font-display text-xl text-on-surface mb-2">未找到匹配的岗位</p>
+        <p class="text-sm text-on-surface-variant mb-6">尝试调整筛选条件，或清空所有筛选重新查看全部机会。</p>
+        <button id="btn-clear-filters" class="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center gap-2">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>清空筛选
+        </button>
+      </div>
+
+      <!-- 结果计数 -->
+      <div class="mt-6 px-4 flex items-center justify-between font-label text-xs text-on-surface-variant/60">
+        <span id="result-count">显示 10 / 10 个岗位</span>
+        <span class="hidden lg:inline">滚动查看更多 ↓</span>
+      </div>
+    </section>
+
+    <!-- 底部 CTA -->
+    <section class="scroll-reveal px-4 sm:px-6 lg:px-8 pb-24">
+      <div class="liquid-glass rounded-2xl p-8 sm:p-12 relative overflow-hidden">
+        <!-- 装饰性序号 -->
+        <span class="absolute top-6 right-8 font-display text-7xl font-light text-on-surface/5 select-none">∞</span>
+        <div class="relative max-w-2xl">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="h-px w-8 bg-primary/60"></span>
+            <span class="font-label text-xs tracking-[0.25em] text-primary uppercase">Talent Network</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-4xl font-light leading-tight text-on-surface">
+            没有找到合适的岗位？<br>加入人才网络，获取最新机会
+          </h2>
+          <p class="mt-4 text-sm text-on-surface-variant leading-relaxed">
+            提交你的简历至人才库，当有匹配的岗位开放时，我们将第一时间与你联系。
+          </p>
+          <!-- 邮箱投递入口 -->
+          <div class="mt-6 flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-1">
+              <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant"></i>
+              <input id="cta-email" type="email" placeholder="your@email.com"
+                class="w-full bg-surface-container border-none rounded-lg pl-11 pr-4 py-3 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+            </div>
+            <button id="btn-submit-email" class="bg-primary text-on-primary px-6 py-3 rounded-lg text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2 whitespace-nowrap">
+              加入人才网络
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <p class="mt-3 font-label text-[11px] text-on-surface-variant/50">
+            或直接投递简历至 <span class="text-primary/80">careers@quantum-talent.network</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- @main-content:end -->
+  </main>
+
+  <!-- 交互脚本 -->
+  <script>
+    $(function() {
+      // ── 筛选状态 ──────────────────────────────────────
+      var currentTrack = 'all';
+      var currentCity  = 'all';
+      var urgentOnly   = false;
+
+      // ── 筛选执行函数 ──────────────────────────────────
+      function applyFilters() {
+        var keyword = $('#search-input').val().trim().toLowerCase();
+        var visibleCount = 0;
+
+        $('.job-row').each(function() {
+          var $row = $(this);
+          var track = $row.data('track');
+          var city  = $row.data('city');
+          var urgent = $row.data('urgent') === true || $row.data('urgent') === 'true';
+          var searchText = ($row.data('search') || '').toString().toLowerCase();
+
+          var trackMatch = (currentTrack === 'all' || track === currentTrack);
+          var cityMatch  = (currentCity === 'all' || city === currentCity);
+          var urgentMatch = (!urgentOnly || urgent);
+          var keywordMatch = (keyword === '' || searchText.indexOf(keyword) !== -1);
+
+          if (trackMatch && cityMatch && urgentMatch && keywordMatch) {
+            $row.show();
+            visibleCount++;
+          } else {
+            $row.hide();
+          }
+        });
+
+        // 更新结果计数
+        $('#result-count').text('显示 ' + visibleCount + ' / 10 个岗位');
+
+        // 空状态切换
+        if (visibleCount === 0) {
+          $('#empty-state').removeClass('hidden').addClass('flex');
+          $('#result-count').parent().addClass('hidden');
+        } else {
+          $('#empty-state').addClass('hidden').removeClass('flex');
+          $('#result-count').parent().removeClass('hidden');
+        }
+      }
+
+      // ── 搜索框实时筛选 ────────────────────────────────
+      $('#search-input').on('input', function() {
+        applyFilters();
+      });
+
+      // ── 赛道筛选按钮 ──────────────────────────────────
+      $('.track-btn').on('click', function() {
+        var $btn = $(this);
+        currentTrack = $btn.data('track');
+
+        // 更新按钮样式：选中态用 primary 背景
+        $('.track-btn').removeClass('bg-primary text-on-primary')
+                       .addClass('bg-surface-container text-on-surface-variant');
+        $btn.removeClass('bg-surface-container text-on-surface-variant')
+            .addClass('bg-primary text-on-primary');
+
+        applyFilters();
+      });
+
+      // ── 城市筛选下拉 ──────────────────────────────────
+      $('#city-filter').on('change', function() {
+        currentCity = $(this).val();
+        applyFilters();
+      });
+
+      // ── 急招开关 ──────────────────────────────────────
+      $('#urgent-toggle').on('click', function() {
+        urgentOnly = !urgentOnly;
+        var $btn = $(this);
+        var $knob = $('#urgent-knob');
+
+        if (urgentOnly) {
+          $btn.attr('aria-pressed', 'true')
+              .removeClass('bg-surface-container')
+              .addClass('bg-primary/40');
+          $knob.removeClass('bg-on-surface-variant bg-on-surface-variant')
+               .css({ 'left': '1.375rem', 'background': '#d4a574' });
+        } else {
+          $btn.attr('aria-pressed', 'false')
+              .removeClass('bg-primary/40')
+              .addClass('bg-surface-container');
+          $knob.css({ 'left': '0.125rem', 'background': '' })
+               .addClass('bg-on-surface-variant');
+        }
+
+        applyFilters();
+      });
+
+      // ── 清空筛选按钮 ──────────────────────────────────
+      $('#btn-clear-filters').on('click', function() {
+        // 重置搜索框
+        $('#search-input').val('');
+        // 重置赛道
+        currentTrack = 'all';
+        $('.track-btn').removeClass('bg-primary text-on-primary')
+                       .addClass('bg-surface-container text-on-surface-variant');
+        $('.track-btn[data-track="all"]').removeClass('bg-surface-container text-on-surface-variant')
+                                         .addClass('bg-primary text-on-primary');
+        // 重置城市
+        currentCity = 'all';
+        $('#city-filter').val('all');
+        // 重置急招
+        urgentOnly = false;
+        $('#urgent-toggle').attr('aria-pressed', 'false')
+                           .removeClass('bg-primary/40')
+                           .addClass('bg-surface-container');
+        $('#urgent-knob').css({ 'left': '0.125rem', 'background': '' })
+                         .addClass('bg-on-surface-variant');
+
+        applyFilters();
+      });
+
+      // ── 邮箱投递入口 ──────────────────────────────────
+      // 点击"加入人才网络"按钮：
+      // 1. 校验邮箱格式是否合法
+      // 2. 合法则显示成功提示并清空输入框
+      // 3. 非法则在输入框下方提示"请输入有效邮箱"
+      $('#btn-submit-email').on('click', function() {
+        var email = $('#cta-email').val().trim();
+        var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (email === '' || !emailRe.test(email)) {
+          $('#cta-email').addClass('ring-2 ring-error/50');
+          setTimeout(function() { $('#cta-email').removeClass('ring-2 ring-error/50'); }, 2000);
+          return;
+        }
+        console.log('邮箱投递成功，已加入人才网络:', email);
+        // 简易成功反馈：按钮文字临时变更
+        var $btn = $(this);
+        var originalText = $btn.html();
+        $btn.html('<i data-lucide="check" class="w-4 h-4"></i> 已加入');
+        lucide.createIcons();
+        $('#cta-email').val('');
+        setTimeout(function() {
+          $btn.html(originalText);
+          lucide.createIcons();
+        }, 2500);
+      });
+
+      // ── Scroll Reveal 渐入动画 ────────────────────────
+      function initScrollReveal() {
+        var $reveals = $('.scroll-reveal');
+        if ($reveals.length === 0) return;
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          $reveals.addClass('visible');
+          return;
+        }
+
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+        $reveals.each(function() {
+          observer.observe(this);
+        });
+      }
+      initScrollReveal();
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

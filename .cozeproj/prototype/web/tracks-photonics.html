@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- 字体：Display(编辑式衬线) + Body(中文无衬线) + Label(等宽) -->
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet"/>
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色：地平线金 === */
+      --color-primary:              #d4a574;
+      --color-primary-container:    rgba(212, 165, 116, 0.12);
+      --color-on-primary:           #0a0a0b;
+      /* === 背景 / 表面：深空色阶 === */
+      --color-background:                 #0a0a0b;
+      --color-surface-container-lowest:   #0d0d0f;
+      --color-surface:                    #111113;
+      --color-surface-container:          #1a1a1d;
+      --color-surface-container-high:     #232326;
+      --color-surface-container-highest:  #2a2a2e;
+      /* === 文字 === */
+      --color-on-surface:           #f5f5f7;
+      --color-on-surface-variant:   #a1a1aa;
+      /* === 功能色 === */
+      --color-success:  #22c55e;
+      --color-error:    #ef4444;
+      --color-warning:  #f59e0b;
+      /* === 边框 === */
+      --color-outline:          rgba(255, 255, 255, 0.12);
+      --color-outline-variant:  rgba(255, 255, 255, 0.06);
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（深色主题，opacity 偏高） === */
+      --shadow-card:   0 2px 12px rgba(0,0,0,0.4);
+      --shadow-float:  0 10px 30px rgba(0,0,0,0.5);
+      --shadow-dialog: 0 25px 60px rgba(0,0,0,0.6);
+      /* === 字体角色 === */
+      --font-display: "Fraunces", "Noto Serif SC", Georgia, serif;
+      --font-sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      --font-label: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+
+  <!-- 液态玻璃导航样式 -->
+  <style>
+    .liquid-glass {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+    .liquid-glass:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .scroll-reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-reveal { opacity: 1; transform: none; transition: none; }
+      * { scroll-behavior: auto !important; }
+    }
+    .hero-overlay {
+      background: linear-gradient(180deg, rgba(10,10,11,0.3) 0%, rgba(10,10,11,0.6) 50%, rgba(10,10,11,0.95) 100%);
+    }
+    .hero-overlay-left {
+      background: linear-gradient(90deg, rgba(10,10,11,0.92) 0%, rgba(10,10,11,0.7) 40%, rgba(10,10,11,0.2) 70%, transparent 100%);
+    }
+    /* === 光量子赛道专属：光波线条装饰 === */
+    .photon-wave-bg {
+      background:
+        radial-gradient(ellipse 60% 50% at 85% 35%, rgba(212,165,116,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 70% 70%, rgba(212,165,116,0.04) 0%, transparent 50%),
+        linear-gradient(135deg, #0a0a0b 0%, #0d0d0f 40%, #111113 100%);
+    }
+    .photon-wave-svg path {
+      stroke: rgba(212, 165, 116, 0.25);
+      fill: none;
+    }
+    .photon-wave-svg path:nth-child(2) { stroke: rgba(212, 165, 116, 0.15); }
+    .photon-wave-svg path:nth-child(3) { stroke: rgba(212, 165, 116, 0.10); }
+    .photon-wave-svg path:nth-child(4) { stroke: rgba(212, 165, 116, 0.07); }
+    .photon-wave-svg path:nth-child(5) { stroke: rgba(212, 165, 116, 0.05); }
+    .photon-wave-svg path:nth-child(6) { stroke: rgba(212, 165, 116, 0.03); }
+    .photon-wave-svg circle {
+      fill: rgba(212, 165, 116, 0.4);
+    }
+    .photon-wave-svg circle.dim { fill: rgba(212, 165, 116, 0.15); }
+    .photon-wave-svg line {
+      stroke: rgba(212, 165, 116, 0.12);
+      stroke-dasharray: 4 6;
+    }
+    @keyframes photon-flow {
+      0% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: -80; }
+    }
+    .photon-wave-svg .flow-line {
+      stroke-dasharray: 6 10;
+      animation: photon-flow 3s linear infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .photon-wave-svg .flow-line { animation: none; }
+    }
+    /* === 光路节点连线 === */
+    .optical-path-line {
+      background: linear-gradient(90deg, transparent, rgba(212,165,116,0.3), transparent);
+      height: 1px;
+    }
+  </style>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件 -->
+  <header class="fixed top-0 left-0 right-0 z-50 px-4 py-3 sm:px-6 transition-all duration-300" id="site-header">
+    <div class="mx-auto max-w-7xl">
+      <div class="liquid-glass flex items-center justify-between rounded-full px-4 py-2.5 sm:px-6">
+        <a href="home.html" class="flex items-center gap-2.5 text-on-surface transition-opacity hover:opacity-80">
+          <span class="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 font-label text-sm font-medium text-primary">Q</span>
+          <span class="font-sans text-sm font-medium tracking-tight sm:text-base">量子人才网络</span>
+        </a>
+        <nav class="hidden items-center gap-1 md:flex">
+          <a href="home.html" class="rounded-lg px-4 py-2 text-sm text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface" data-nav="home">首页</a>
+          <a href="tracks.html" class="rounded-lg px-4 py-2 text-sm text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface" data-nav="tracks">赛道</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2 text-sm text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface" data-nav="opportunities">岗位</a>
+        </nav>
+        <div class="flex items-center gap-3">
+          <a href="opportunities.html" class="hidden rounded-full bg-on-surface px-5 py-2 text-sm font-medium text-background transition-all hover:bg-primary hover:text-on-primary sm:inline-flex">探索岗位</a>
+          <button id="mobile-menu-btn" class="md:hidden text-on-surface p-1.5" aria-label="菜单">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+      <!-- 移动端菜单 -->
+      <div id="mobile-menu" class="hidden mt-2 liquid-glass rounded-2xl p-4 md:hidden">
+        <nav class="flex flex-col gap-1">
+          <a href="home.html" class="rounded-lg px-4 py-2.5 text-sm text-on-surface-variant hover:bg-white/5 hover:text-on-surface">首页</a>
+          <a href="tracks.html" class="rounded-lg px-4 py-2.5 text-sm text-on-surface-variant hover:bg-white/5 hover:text-on-surface">赛道</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2.5 text-sm text-on-surface-variant hover:bg-white/5 hover:text-on-surface">岗位</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2.5 text-sm font-medium text-primary">探索岗位</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <script>
+    $(function() {
+      var $btn = $('#mobile-menu-btn');
+      var $menu = $('#mobile-menu');
+      $btn.on('click', function() { $menu.slideToggle(200); });
+    });
+  </script>
+  <!-- @nav:end 导航组件 -->
+
+  <main class="max-w-7xl mx-auto">
+    <!-- @main-content:start -->
+
+    <!-- ==================== 1. 赛道Hero ==================== -->
+    <section class="relative photon-wave-bg overflow-hidden -mx-[max(0px,calc((100vw-80rem)/2))] px-6 sm:px-8 pb-20 pt-32" id="track-hero">
+      <!-- 光波线条装饰 SVG -->
+      <div class="absolute inset-0 pointer-events-none flex items-center justify-end" aria-hidden="true">
+        <svg class="photon-wave-svg w-[55%] max-w-[640px] h-auto opacity-80" viewBox="0 0 600 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- 光波传播路径，从左上到右下，模拟光路 -->
+          <path d="M 50 80 Q 200 120, 350 200 T 580 350" stroke-width="1.5" />
+          <path d="M 50 140 Q 200 180, 350 260 T 580 400" stroke-width="1.5" />
+          <path d="M 50 200 Q 200 240, 350 320 T 580 440" stroke-width="1.5" />
+          <path d="M 50 260 Q 200 300, 350 380 T 580 470" stroke-width="1.5" />
+          <path d="M 50 320 Q 200 360, 350 430 T 580 490" stroke-width="1.5" />
+          <path d="M 50 380 Q 200 420, 350 460 T 580 500" stroke-width="1.5" />
+          <!-- 光路节点 -->
+          <circle cx="50" cy="80" r="3" />
+          <circle cx="200" cy="120" r="2.5" />
+          <circle cx="350" cy="200" r="4" />
+          <circle cx="580" cy="350" r="3" />
+          <circle cx="200" cy="180" r="2" class="dim" />
+          <circle cx="350" cy="260" r="3" />
+          <circle cx="580" cy="400" r="2.5" class="dim" />
+          <!-- 光路虚线连接 -->
+          <line x1="50" y1="80" x2="580" y2="350" />
+          <line x1="50" y1="140" x2="580" y2="400" />
+          <!-- 流动光线 -->
+          <path class="flow-line" d="M 50 80 Q 200 120, 350 200 T 580 350" stroke="rgba(212,165,116,0.4)" stroke-width="1" />
+          <path class="flow-line" d="M 50 200 Q 200 240, 350 320 T 580 440" stroke="rgba(212,165,116,0.25)" stroke-width="1" />
+        </svg>
+      </div>
+
+      <div class="relative z-10 max-w-3xl">
+        <!-- 大编号 03 -->
+        <div class="font-display text-[8rem] sm:text-[10rem] leading-none text-primary/20 select-none" style="font-weight: 300;">03</div>
+
+        <!-- 英文名 -->
+        <div class="font-label text-sm tracking-[0.2em] text-primary mt-2 mb-3 uppercase">Photonic Quantum</div>
+
+        <!-- 中文名 -->
+        <h1 class="font-display text-6xl sm:text-7xl lg:text-8xl text-on-surface leading-[0.95]" style="font-weight: 400;">光量子</h1>
+
+        <!-- 描述段落 -->
+        <p class="font-sans text-base sm:text-lg text-on-surface-variant leading-relaxed mt-8 max-w-2xl">
+          以单光子和纠缠光子作为信息载体，具备室温运行与天然兼容光通信网络的潜力。涉及光子源、线性光学、集成光路与量子协议。
+        </p>
+
+        <!-- 元信息标签 -->
+        <div class="flex flex-wrap gap-3 mt-10">
+          <span class="font-label text-xs text-on-surface-variant border border-outline-variant rounded-full px-3 py-1">室温运行</span>
+          <span class="font-label text-xs text-on-surface-variant border border-outline-variant rounded-full px-3 py-1">低退相干</span>
+          <span class="font-label text-xs text-on-surface-variant border border-outline-variant rounded-full px-3 py-1">光通信兼容</span>
+          <span class="font-label text-xs text-on-surface-variant border border-outline-variant rounded-full px-3 py-1">可扩展网络</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 2. 赛道概述 ==================== -->
+    <section class="scroll-reveal px-6 sm:px-8 py-20 lg:py-28" id="track-overview">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
+        <!-- 左侧小标题 -->
+        <div class="lg:col-span-4">
+          <div class="font-label text-xs tracking-[0.15em] text-primary uppercase mb-4">Section 01</div>
+          <h2 class="font-display text-3xl text-on-surface" style="font-weight: 400;">赛道概述</h2>
+        </div>
+        <!-- 右侧正文 -->
+        <div class="lg:col-span-8">
+          <p class="font-sans text-lg sm:text-xl text-on-surface-variant leading-[1.85]">
+            光量子计算利用光子作为量子信息的载体，通过线性光学元件（分束器、移相器）和光子探测器实现量子逻辑操作。光量子系统具有室温运行、低退相干和天然兼容光通信网络的优势，在量子通信和可扩展量子计算方面具有独特潜力。
+          </p>
+          <!-- 核心优势指标 -->
+          <div class="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-outline-variant">
+            <div>
+              <div class="font-display text-3xl text-primary" style="font-weight: 500;">300K</div>
+              <div class="font-label text-xs text-on-surface-variant mt-1 tracking-wide">工作温度</div>
+            </div>
+            <div>
+              <div class="font-display text-3xl text-primary" style="font-weight: 500;">μs</div>
+              <div class="font-label text-xs text-on-surface-variant mt-1 tracking-wide">相干时间量级</div>
+            </div>
+            <div>
+              <div class="font-display text-3xl text-primary" style="font-weight: 500;">∞</div>
+              <div class="font-label text-xs text-on-surface-variant mt-1 tracking-wide">网络可扩展性</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. 核心技术路线 ==================== -->
+    <section class="scroll-reveal px-6 sm:px-8 py-20 lg:py-28 border-t border-outline-variant" id="tech-routes">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 mb-12">
+        <div class="lg:col-span-4">
+          <div class="font-label text-xs tracking-[0.15em] text-primary uppercase mb-4">Section 02</div>
+          <h2 class="font-display text-3xl text-on-surface" style="font-weight: 400;">核心技术路线</h2>
+        </div>
+        <div class="lg:col-span-8">
+          <p class="font-sans text-base text-on-surface-variant leading-relaxed">
+            从光源产生到协议实现，光量子技术的四层架构构成了从物理硬件到网络应用的完整链路。
+          </p>
+        </div>
+      </div>
+
+      <!-- 编号式列表 -->
+      <div class="space-y-0">
+        <!-- 技术路线-01 单光子源 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 py-8 border-t border-outline-variant group">
+          <div class="lg:col-span-2">
+            <span class="font-display text-4xl text-primary/30 group-hover:text-primary/50 transition-colors" style="font-weight: 300;">01</span>
+          </div>
+          <div class="lg:col-span-3">
+            <h3 class="font-display text-xl text-on-surface" style="font-weight: 500;">单光子源</h3>
+          </div>
+          <div class="lg:col-span-7">
+            <p class="font-sans text-sm text-on-surface-variant leading-relaxed">
+              量子点单光子源、参量下转换(SPDC)光源、确定性光子源。追求高纯度、高效率、高不可区分性的单光子发射，是光量子计算的基石。
+            </p>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <span class="font-label text-xs text-on-surface-variant/70 bg-surface-container px-2.5 py-0.5 rounded">量子点</span>
+              <span class="font-label text-xs text-on-surface-variant/70 bg-surface-container px-2.5 py-0.5 rounded">SPDC</span>
+              <span class="font-label text-xs text-on-surface-variant/70 bg-surface-container px-2.5 py-0.5 rounded">确定性光源</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 技术路线-02 线性光学 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 py-8 border-t border-outline-variant group">
+          <div class="lg:col-span-2">
+            <span class="font-display text-4xl text-primary/30 group-hover:text-primary/50 transition-colors" style="font-weight: 300;">02</span>
+          </div>
+          <div class="lg:col-span-3">
+            <h3 class="font-display text-xl text-on-surface" style="font-weight: 500;">线性光学</h3>
+          </div>
+          <div class="lg:col-span-7">
+            <p class="font-sans text-sm text-on-surface-variant leading-relaxed">
+              分束器、移相器、光子干涉。通过线性光学量子计算(LOQC)方案，利用光子的干涉和测量实现量子逻辑门操作，无需直接的光子-光子相互作用。
+            </p>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <span class="font-label text-xs text-on-surface-variant/70 bg-surface-container px-2.5 py-0.5 rounded">分束器</span>
+              <span class="font-label text-xs text-on-surface-variant/70 bg-surface-container px-2.5 py-0.5 rounded">移相器</span>
+              <span class="font-label text-xs text-on-surface-variant/70 bg-surface-container px-2.5 py-0.5 rounded">光子干涉</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 技术路线-03 集成光路 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 py-8 border-t border-outline-variant group">
+          <div class="lg:col-span-2">
+            <span class="font-display text-4xl text-primary/30 group-hover:text-primary/50 transition-colors" style="font-weight: 300;">03</span>
+          </div>
+          <div class="lg:col-span-3">
+            <h3 class="font-display text-xl text-on-surface" style="font-weight: 500;">集成光路</h3>
+          </div>
+          <div class="lg:col-span-7">
+            <p class="font-sans text-sm text-on-surface-variant leading-relaxed">
+              硅光芯片、铌酸锂光路、片上量子操控。将传统光学元件集成到芯片级平台，实现小型化、可扩展的光量子处理器，是走向实用化的关键路径。
+            </p>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <span class="font-label text-xs text-on-surface-variant/70 bg-surface-container px-2.5 py-0.5 rounded">硅光芯片</span>
+              <span class="font-label text-xs text-on-surface-variant/70 bg-surface-container px-2.5 py-0.5 rounded">铌酸锂</span>
+              <span class="font-label text-xs text-on-surface-variant/70 bg-surface-container px-2.5 py-0.5 rounded">片上操控</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 技术路线-04 量子协议 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 py-8 border-t border-b border-outline-variant group">
+          <div class="lg:col-span-2">
+            <span class="font-display text-4xl text-primary/30 group-hover:text-primary/50 transition-colors" style="font-weight: 300;">04</span>
+          </div>
+          <div class="lg:col-span-3">
+            <h3 class="font-display text-xl text-on-surface" style="font-weight: 500;">量子协议</h3>
+          </div>
+          <div class="lg:col-span-7">
+            <p class="font-sans text-sm text-on-surface-variant leading-relaxed">
+              BB84量子密钥分发、纠缠分发、光量子网络。基于光子特性实现的量子通信协议，为构建安全的光量子网络和分布式量子计算提供协议层支撑。
+            </p>
+            <div class="flex flex-wrap gap-2 mt-3">
+              <span class="font-label text-xs text-on-surface-variant/70 bg-surface-container px-2.5 py-0.5 rounded">BB84</span>
+              <span class="font-label text-xs text-on-surface-variant/70 bg-surface-container px-2.5 py-0.5 rounded">纠缠分发</span>
+              <span class="font-label text-xs text-on-surface-variant/70 bg-surface-container px-2.5 py-0.5 rounded">光量子网络</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 4. 典型应用方向 ==================== -->
+    <section class="scroll-reveal px-6 sm:px-8 py-20 lg:py-28" id="applications">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 mb-12">
+        <div class="lg:col-span-4">
+          <div class="font-label text-xs tracking-[0.15em] text-primary uppercase mb-4">Section 03</div>
+          <h2 class="font-display text-3xl text-on-surface" style="font-weight: 400;">典型应用方向</h2>
+        </div>
+        <div class="lg:col-span-8">
+          <p class="font-sans text-base text-on-surface-variant leading-relaxed">
+            光量子技术在计算、通信与模拟三大方向各具独特优势，覆盖从基础研究到产业落地的完整光谱。
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-outline-variant rounded-lg overflow-hidden">
+        <!-- 应用-光量子计算 -->
+        <div class="bg-surface p-8 hover:bg-surface-container transition-colors duration-300">
+          <div class="flex items-center gap-3 mb-4">
+            <i data-lucide="cpu" class="w-5 h-5 text-primary"></i>
+            <span class="font-label text-xs text-on-surface-variant tracking-wide">Application A</span>
+          </div>
+          <h3 class="font-display text-2xl text-on-surface mb-3" style="font-weight: 500;">光量子计算</h3>
+          <p class="font-sans text-sm text-on-surface-variant leading-relaxed">
+            利用光子并行性和干涉特性实现量子计算，在玻色采样和特定算法上已展示量子优势，是迈向通用量子计算的重要路径。
+          </p>
+        </div>
+        <!-- 应用-量子通信网络 -->
+        <div class="bg-surface p-8 hover:bg-surface-container transition-colors duration-300">
+          <div class="flex items-center gap-3 mb-4">
+            <i data-lucide="network" class="w-5 h-5 text-primary"></i>
+            <span class="font-label text-xs text-on-surface-variant tracking-wide">Application B</span>
+          </div>
+          <h3 class="font-display text-2xl text-on-surface mb-3" style="font-weight: 500;">量子通信网络</h3>
+          <p class="font-sans text-sm text-on-surface-variant leading-relaxed">
+            基于光子天然兼容光纤的特性，构建城域到广域的量子密钥分发网络，实现无条件安全的通信基础设施。
+          </p>
+        </div>
+        <!-- 应用-光量子模拟 -->
+        <div class="bg-surface p-8 hover:bg-surface-container transition-colors duration-300">
+          <div class="flex items-center gap-3 mb-4">
+            <i data-lucide="waves" class="w-5 h-5 text-primary"></i>
+            <span class="font-label text-xs text-on-surface-variant tracking-wide">Application C</span>
+          </div>
+          <h3 class="font-display text-2xl text-on-surface mb-3" style="font-weight: 500;">光量子模拟</h3>
+          <p class="font-sans text-sm text-on-surface-variant leading-relaxed">
+            利用光子系统模拟复杂量子多体现象，在凝聚态物理、量子化学等领域提供经典计算机无法企及的模拟能力。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. 相关人才类型 ==================== -->
+    <section class="scroll-reveal px-6 sm:px-8 py-20 lg:py-28 border-t border-outline-variant" id="talent-types">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 mb-12">
+        <div class="lg:col-span-4">
+          <div class="font-label text-xs tracking-[0.15em] text-primary uppercase mb-4">Section 04</div>
+          <h2 class="font-display text-3xl text-on-surface" style="font-weight: 400;">相关人才类型</h2>
+        </div>
+        <div class="lg:col-span-8">
+          <p class="font-sans text-base text-on-surface-variant leading-relaxed">
+            光量子赛道需要跨越物理、工程与软件的复合型人才，从光源研发到系统软件构建全链路覆盖。
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- 人才-光量子科学家 -->
+        <div class="bg-surface rounded-lg shadow-card p-6 border border-outline-variant hover:border-primary/20 transition-colors">
+          <div class="flex items-center justify-between mb-5">
+            <span class="font-label text-xs text-primary tracking-wide">Talent 01</span>
+            <i data-lucide="microscope" class="w-4 h-4 text-on-surface-variant"></i>
+          </div>
+          <h3 class="font-display text-xl text-on-surface mb-2" style="font-weight: 500;">光量子科学家</h3>
+          <p class="font-sans text-sm text-on-surface-variant leading-relaxed">
+            专注于光子源、量子光学与光物质相互作用的基础研究，推动单光子源品质与量子干涉效率的边界。
+          </p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2 py-0.5 rounded">量子光学</span>
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2 py-0.5 rounded">光子源</span>
+          </div>
+        </div>
+        <!-- 人才-集成光路工程师 -->
+        <div class="bg-surface rounded-lg shadow-card p-6 border border-outline-variant hover:border-primary/20 transition-colors">
+          <div class="flex items-center justify-between mb-5">
+            <span class="font-label text-xs text-primary tracking-wide">Talent 02</span>
+            <i data-lucide="circuit-board" class="w-4 h-4 text-on-surface-variant"></i>
+          </div>
+          <h3 class="font-display text-xl text-on-surface mb-2" style="font-weight: 500;">集成光路工程师</h3>
+          <p class="font-sans text-sm text-on-surface-variant leading-relaxed">
+            负责硅光与铌酸锂芯片的设计、流片与封装测试，将实验室光学系统转化为可量产的集成光量子芯片。
+          </p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2 py-0.5 rounded">硅光</span>
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2 py-0.5 rounded">封装测试</span>
+          </div>
+        </div>
+        <!-- 人才-量子软件工程师 -->
+        <div class="bg-surface rounded-lg shadow-card p-6 border border-outline-variant hover:border-primary/20 transition-colors">
+          <div class="flex items-center justify-between mb-5">
+            <span class="font-label text-xs text-primary tracking-wide">Talent 03</span>
+            <i data-lucide="code-2" class="w-4 h-4 text-on-surface-variant"></i>
+          </div>
+          <h3 class="font-display text-xl text-on-surface mb-2" style="font-weight: 500;">量子软件工程师</h3>
+          <p class="font-sans text-sm text-on-surface-variant leading-relaxed">
+            开发光量子计算的编译器、算法库与应用层软件，将量子算法映射到光量子硬件的物理操作上。
+          </p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2 py-0.5 rounded">编译器</span>
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2 py-0.5 rounded">算法</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 6. 相关岗位 ==================== -->
+    <section class="scroll-reveal px-6 sm:px-8 py-20 lg:py-28 border-t border-outline-variant" id="related-jobs">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 mb-12">
+        <div class="lg:col-span-4">
+          <div class="font-label text-xs tracking-[0.15em] text-primary uppercase mb-4">Section 05</div>
+          <h2 class="font-display text-3xl text-on-surface" style="font-weight: 400;">相关岗位</h2>
+        </div>
+        <div class="lg:col-span-8">
+          <p class="font-sans text-base text-on-surface-variant leading-relaxed">
+            当前光量子赛道开放的核心岗位，涵盖从科研到工程的完整人才光谱。
+          </p>
+        </div>
+      </div>
+
+      <!-- 杂志目录式列表 -->
+      <div class="space-y-0">
+        <!-- 岗位-1 光量子科学家 -->
+        <a href="job-detail.html?id=photonics-scientist" id="job-link-1" class="block group">
+          <div class="grid grid-cols-12 gap-4 items-center py-6 border-t border-outline-variant hover:bg-surface-container/50 transition-colors -mx-4 px-4 rounded-sm">
+            <div class="col-span-1 font-label text-xs text-on-surface-variant/50">001</div>
+            <div class="col-span-12 sm:col-span-4">
+              <h3 class="font-display text-lg text-on-surface group-hover:text-primary transition-colors" style="font-weight: 500;">光量子科学家</h3>
+              <p class="font-sans text-xs text-on-surface-variant mt-1">百度量子计算研究所</p>
+            </div>
+            <div class="col-span-4 sm:col-span-2 font-sans text-sm text-on-surface-variant">北京</div>
+            <div class="col-span-4 sm:col-span-2 font-sans text-sm text-on-surface-variant">博士</div>
+            <div class="col-span-4 sm:col-span-2 flex items-center gap-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-error/15 text-error">急招</span>
+            </div>
+            <div class="hidden sm:flex col-span-1 justify-end">
+              <i data-lucide="arrow-up-right" class="w-4 h-4 text-on-surface-variant group-hover:text-primary transition-colors"></i>
+            </div>
+          </div>
+          <!-- 技能标签 -->
+          <div class="flex flex-wrap gap-2 pb-6 pl-0 sm:pl-[8.333%]">
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2.5 py-0.5 rounded">单光子源</span>
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2.5 py-0.5 rounded">线性光学</span>
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2.5 py-0.5 rounded">量子协议</span>
+          </div>
+        </a>
+
+        <!-- 岗位-2 集成光路工程师 -->
+        <a href="job-detail.html?id=photonics-engineer" id="job-link-2" class="block group">
+          <div class="grid grid-cols-12 gap-4 items-center py-6 border-t border-outline-variant hover:bg-surface-container/50 transition-colors -mx-4 px-4 rounded-sm">
+            <div class="col-span-1 font-label text-xs text-on-surface-variant/50">002</div>
+            <div class="col-span-12 sm:col-span-4">
+              <h3 class="font-display text-lg text-on-surface group-hover:text-primary transition-colors" style="font-weight: 500;">集成光路工程师</h3>
+              <p class="font-sans text-xs text-on-surface-variant mt-1">达摩院量子实验室</p>
+            </div>
+            <div class="col-span-4 sm:col-span-2 font-sans text-sm text-on-surface-variant">杭州</div>
+            <div class="col-span-4 sm:col-span-2 font-sans text-sm text-on-surface-variant">硕士及以上</div>
+            <div class="col-span-4 sm:col-span-2 flex items-center gap-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">招聘中</span>
+            </div>
+            <div class="hidden sm:flex col-span-1 justify-end">
+              <i data-lucide="arrow-up-right" class="w-4 h-4 text-on-surface-variant group-hover:text-primary transition-colors"></i>
+            </div>
+          </div>
+          <!-- 技能标签 -->
+          <div class="flex flex-wrap gap-2 pb-6 pl-0 sm:pl-[8.333%]">
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2.5 py-0.5 rounded">集成光路</span>
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2.5 py-0.5 rounded">硅光芯片</span>
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2.5 py-0.5 rounded">封装测试</span>
+          </div>
+        </a>
+
+        <!-- 岗位-3 量子软件工程师 -->
+        <a href="job-detail.html?id=quantum-software" id="job-link-3" class="block group">
+          <div class="grid grid-cols-12 gap-4 items-center py-6 border-t border-b border-outline-variant hover:bg-surface-container/50 transition-colors -mx-4 px-4 rounded-sm">
+            <div class="col-span-1 font-label text-xs text-on-surface-variant/50">003</div>
+            <div class="col-span-12 sm:col-span-4">
+              <h3 class="font-display text-lg text-on-surface group-hover:text-primary transition-colors" style="font-weight: 500;">量子软件工程师</h3>
+              <p class="font-sans text-xs text-on-surface-variant mt-1">百度量子计算研究所</p>
+            </div>
+            <div class="col-span-4 sm:col-span-2 font-sans text-sm text-on-surface-variant">北京</div>
+            <div class="col-span-4 sm:col-span-2 font-sans text-sm text-on-surface-variant">本科及以上</div>
+            <div class="col-span-4 sm:col-span-2 flex items-center gap-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">招聘中</span>
+            </div>
+            <div class="hidden sm:flex col-span-1 justify-end">
+              <i data-lucide="arrow-up-right" class="w-4 h-4 text-on-surface-variant group-hover:text-primary transition-colors"></i>
+            </div>
+          </div>
+          <!-- 技能标签 -->
+          <div class="flex flex-wrap gap-2 pb-6 pl-0 sm:pl-[8.333%]">
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2.5 py-0.5 rounded">量子软件</span>
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2.5 py-0.5 rounded">编译器</span>
+            <span class="font-label text-xs text-on-surface-variant/60 bg-surface-container px-2.5 py-0.5 rounded">Python/C++</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ==================== 7. 投递与咨询CTA ==================== -->
+    <section class="scroll-reveal px-6 sm:px-8 py-20 lg:py-28" id="cta-section">
+      <div class="liquid-glass rounded-2xl p-10 sm:p-14 relative overflow-hidden">
+        <!-- 装饰光路线条 -->
+        <div class="absolute right-0 top-0 bottom-0 w-1/3 pointer-events-none opacity-30" aria-hidden="true">
+          <svg class="w-full h-full" viewBox="0 0 200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 0 50 Q 50 80, 100 150 T 200 300" stroke="rgba(212,165,116,0.2)" stroke-width="1" fill="none"/>
+            <path d="M 0 100 Q 50 130, 100 200 T 200 350" stroke="rgba(212,165,116,0.15)" stroke-width="1" fill="none"/>
+            <path d="M 0 150 Q 50 180, 100 250 T 200 380" stroke="rgba(212,165,116,0.10)" stroke-width="1" fill="none"/>
+            <circle cx="0" cy="50" r="2" fill="rgba(212,165,116,0.4)"/>
+            <circle cx="100" cy="150" r="3" fill="rgba(212,165,116,0.3)"/>
+            <circle cx="200" cy="300" r="2" fill="rgba(212,165,116,0.2)"/>
+          </svg>
+        </div>
+
+        <div class="relative z-10 max-w-2xl">
+          <div class="font-label text-xs tracking-[0.15em] text-primary uppercase mb-4">Get in Touch</div>
+          <h2 class="font-display text-3xl sm:text-4xl text-on-surface mb-4" style="font-weight: 400;">投递与咨询</h2>
+          <p class="font-sans text-base text-on-surface-variant leading-relaxed mb-8">
+            如果你在光量子领域有研究积累或工程经验，欢迎与我们联系。我们持续寻找推动光量子技术边界的同行者。
+          </p>
+
+          <!-- 联系方式 -->
+          <div class="space-y-4">
+            <!-- 邮箱 -->
+            <div class="flex items-center gap-4">
+              <div class="flex items-center justify-center w-10 h-10 rounded-full border border-outline bg-surface-container shrink-0">
+                <i data-lucide="mail" class="w-4 h-4 text-primary"></i>
+              </div>
+              <div>
+                <div class="font-label text-xs text-on-surface-variant tracking-wide">Email</div>
+                <div class="font-sans text-sm text-on-surface">talent@quantum-network.example</div>
+              </div>
+            </div>
+            <!-- 微信 -->
+            <div class="flex items-center gap-4">
+              <div class="flex items-center justify-center w-10 h-10 rounded-full border border-outline bg-surface-container shrink-0">
+                <i data-lucide="message-circle" class="w-4 h-4 text-primary"></i>
+              </div>
+              <div>
+                <div class="font-label text-xs text-on-surface-variant tracking-wide">WeChat</div>
+                <div class="font-sans text-sm text-on-surface">QuantumTalent</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA 按钮 -->
+          <div class="flex flex-wrap gap-4 mt-10">
+            <a href="opportunities.html" id="cta-view-jobs" class="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-on-primary hover:opacity-90 active:scale-[0.98] transition-all">
+              <i data-lucide="briefcase" class="w-4 h-4"></i>
+              查看全部岗位
+            </a>
+            <a href="mailto:talent@quantum-network.example" id="cta-email" class="inline-flex items-center gap-2 rounded-full border border-outline px-6 py-3 text-sm font-medium text-on-surface hover:bg-surface-container transition-all">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              发送邮件
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 8. 返回入口 ==================== -->
+    <section class="px-6 sm:px-8 py-16 border-t border-outline-variant" id="navigation-footer">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <a href="tracks.html" id="back-to-tracks" class="group flex items-center gap-3 text-on-surface-variant hover:text-on-surface transition-colors">
+          <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i>
+          <span class="font-sans text-sm">返回全部赛道</span>
+        </a>
+        <a href="opportunities.html" id="go-to-opportunities" class="group flex items-center gap-3 text-on-surface-variant hover:text-on-surface transition-colors">
+          <span class="font-sans text-sm">查看全部岗位</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </a>
+      </div>
+
+      <!-- 其他赛道快速导航 -->
+      <div class="mt-12 pt-8 border-t border-outline-variant">
+        <div class="font-label text-xs text-on-surface-variant/50 tracking-wide mb-4">其他赛道</div>
+        <div class="flex flex-wrap gap-3">
+          <a href="tracks-superconducting.html" class="font-sans text-sm text-on-surface-variant hover:text-primary transition-colors border border-outline-variant rounded-full px-4 py-2">01 超导量子</a>
+          <a href="tracks-ion-trap.html" class="font-sans text-sm text-on-surface-variant hover:text-primary transition-colors border border-outline-variant rounded-full px-4 py-2">02 离子阱</a>
+          <span class="font-sans text-sm text-primary border border-primary/30 rounded-full px-4 py-2" aria-current="page">03 光量子</span>
+          <a href="tracks-communication-sensing.html" class="font-sans text-sm text-on-surface-variant hover:text-primary transition-colors border border-outline-variant rounded-full px-4 py-2">04 通信与传感</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- @main-content:end -->
+  </main>
+
+  <script>
+    $(function() {
+      // === Scroll Reveal 动画 ===
+      // 使用 IntersectionObserver 监听 .scroll-reveal 元素进入视口时添加 .visible 类
+      var revealElements = $('.scroll-reveal');
+
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+        revealElements.each(function() {
+          observer.observe(this);
+        });
+      } else {
+        // 不支持 IntersectionObserver 的浏览器直接显示
+        revealElements.addClass('visible');
+      }
+
+      // === 岗位链接点击日志 ===
+      $('#job-link-1').on('click', function() {
+        console.log('点击岗位: 光量子科学家, 跳转 job-detail.html?id=photonics-scientist');
+      });
+      $('#job-link-2').on('click', function() {
+        console.log('点击岗位: 集成光路工程师, 跳转 job-detail.html?id=photonics-engineer');
+      });
+      $('#job-link-3').on('click', function() {
+        console.log('点击岗位: 量子软件工程师, 跳转 job-detail.html?id=quantum-software');
+      });
+
+      // === CTA 按钮点击日志 ===
+      $('#cta-view-jobs').on('click', function() {
+        console.log('CTA: 查看全部岗位, 跳转 opportunities.html');
+      });
+      $('#cta-email').on('click', function() {
+        console.log('CTA: 发送邮件至 talent@quantum-network.example');
+      });
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

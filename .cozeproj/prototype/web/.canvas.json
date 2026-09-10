@@ -1,0 +1,68 @@
+{
+  "elements": [
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/home.html"
+      },
+      "title": "首页",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/tracks.html"
+      },
+      "title": "赛道总览",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/tracks-superconducting.html"
+      },
+      "title": "超导量子",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/tracks-ion-trap.html"
+      },
+      "title": "离子阱",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/tracks-photonics.html"
+      },
+      "title": "光量子",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/tracks-communication-sensing.html"
+      },
+      "title": "量子通信与测量",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/opportunities.html"
+      },
+      "title": "岗位中心",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/job-detail.html"
+      },
+      "title": "岗位详情",
+      "size": "web"
+    }
+  ]
+}

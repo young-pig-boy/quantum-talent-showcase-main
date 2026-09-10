@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- 字体：Display(编辑式衬线) + Body(中文无衬线) + Label(等宽) -->
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet"/>
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/css2?family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色：地平线金 === */
+      --color-primary:              #d4a574;
+      --color-primary-container:    rgba(212, 165, 116, 0.12);
+      --color-on-primary:           #0a0a0b;
+      /* === 背景 / 表面：深空色阶 === */
+      --color-background:                 #0a0a0b;
+      --color-surface-container-lowest:   #0d0d0f;
+      --color-surface:                    #111113;
+      --color-surface-container:          #1a1a1d;
+      --color-surface-container-high:     #232326;
+      --color-surface-container-highest:  #2a2a2e;
+      /* === 文字 === */
+      --color-on-surface:           #f5f5f7;
+      --color-on-surface-variant:   #a1a1aa;
+      /* === 功能色 === */
+      --color-success:  #22c55e;
+      --color-error:    #ef4444;
+      --color-warning:  #f59e0b;
+      /* === 边框 === */
+      --color-outline:          rgba(255, 255, 255, 0.12);
+      --color-outline-variant:  rgba(255, 255, 255, 0.06);
+      /* === 圆角 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.25rem;
+      --radius-full: 9999px;
+      /* === 阴影（深色主题，opacity 偏高） === */
+      --shadow-card:   0 2px 12px rgba(0,0,0,0.4);
+      --shadow-float:  0 10px 30px rgba(0,0,0,0.5);
+      --shadow-dialog: 0 25px 60px rgba(0,0,0,0.6);
+      /* === 字体角色 === */
+      --font-display: "Fraunces", "Noto Serif SC", Georgia, serif;
+      --font-sans: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      --font-label: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+
+  <!-- 液态玻璃导航样式 -->
+  <style>
+    .liquid-glass {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+    .liquid-glass:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .scroll-reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-reveal { opacity: 1; transform: none; transition: none; }
+      * { scroll-behavior: auto !important; }
+    }
+    .hero-overlay {
+      background: linear-gradient(180deg, rgba(10,10,11,0.3) 0%, rgba(10,10,11,0.6) 50%, rgba(10,10,11,0.95) 100%);
+    }
+    .hero-overlay-left {
+      background: linear-gradient(90deg, rgba(10,10,11,0.92) 0%, rgba(10,10,11,0.7) 40%, rgba(10,10,11,0.2) 70%, transparent 100%);
+    }
+    /* 滚动指示器动画 */
+    @keyframes scroll-hint {
+      0%   { transform: translateY(0); opacity: 0.8; }
+      50%  { transform: translateY(6px); opacity: 0.3; }
+      100% { transform: translateY(0); opacity: 0.8; }
+    }
+    .scroll-hint-dot {
+      animation: scroll-hint 1.8s ease-in-out infinite;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-hint-dot { animation: none; }
+    }
+  </style>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件 -->
+  <header class="fixed top-0 left-0 right-0 z-50 px-4 py-3 sm:px-6 transition-all duration-300" id="site-header">
+    <div class="mx-auto max-w-7xl">
+      <div class="liquid-glass flex items-center justify-between rounded-full px-4 py-2.5 sm:px-6">
+        <a href="home.html" class="flex items-center gap-2.5 text-on-surface transition-opacity hover:opacity-80">
+          <span class="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 font-label text-sm font-medium text-primary">Q</span>
+          <span class="font-sans text-sm font-medium tracking-tight sm:text-base">量子人才网络</span>
+        </a>
+        <nav class="hidden items-center gap-1 md:flex">
+          <a href="home.html" class="rounded-lg px-4 py-2 text-sm text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface" data-nav="home">首页</a>
+          <a href="tracks.html" class="rounded-lg px-4 py-2 text-sm text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface" data-nav="tracks">赛道</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2 text-sm text-on-surface-variant transition-colors hover:bg-white/5 hover:text-on-surface" data-nav="opportunities">岗位</a>
+        </nav>
+        <div class="flex items-center gap-3">
+          <a href="opportunities.html" class="hidden rounded-full bg-on-surface px-5 py-2 text-sm font-medium text-background transition-all hover:bg-primary hover:text-on-primary sm:inline-flex">探索岗位</a>
+          <button id="mobile-menu-btn" class="md:hidden text-on-surface p-1.5" aria-label="菜单">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+      <!-- 移动端菜单 -->
+      <div id="mobile-menu" class="hidden mt-2 liquid-glass rounded-2xl p-4 md:hidden">
+        <nav class="flex flex-col gap-1">
+          <a href="home.html" class="rounded-lg px-4 py-2.5 text-sm text-on-surface-variant hover:bg-white/5 hover:text-on-surface">首页</a>
+          <a href="tracks.html" class="rounded-lg px-4 py-2.5 text-sm text-on-surface-variant hover:bg-white/5 hover:text-on-surface">赛道</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2.5 text-sm text-on-surface-variant hover:bg-white/5 hover:text-on-surface">岗位</a>
+          <a href="opportunities.html" class="rounded-lg px-4 py-2.5 text-sm font-medium text-primary">探索岗位</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <script>
+    $(function() {
+      var $btn = $('#mobile-menu-btn');
+      var $menu = $('#mobile-menu');
+      $btn.on('click', function() { $menu.slideToggle(200); });
+    });
+  </script>
+  <!-- @nav:end 导航组件 -->
+
+  <!-- @main-content:start -->
+  <main>
+    <!-- ===== Section 1: Hero（全屏深空背景 + 左下文字偏置）===== -->
+    <section class="relative min-h-screen w-full overflow-hidden" id="hero">
+      <!-- 背景图：从太空看地球夜景 -->
+      <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80"
+           alt="从太空俯瞰地球边缘的夜景"
+           data-category="商业科技"
+           class="absolute inset-0 h-full w-full object-cover">
+      <!-- 左侧渐变遮罩（hero-overlay-left 已在骨架定义）+ 底部渐变 -->
+      <div class="hero-overlay-left absolute inset-0"></div>
+      <div class="hero-overlay absolute inset-0"></div>
+
+      <!-- 文字内容偏左下排布，不居中 -->
+      <div class="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col justify-end px-6 pb-20 pt-32 sm:px-8 sm:pb-24">
+        <div class="max-w-2xl">
+          <!-- 小标签 -->
+          <div class="flex items-center gap-3 mb-8 scroll-reveal">
+            <span class="h-px w-10 bg-primary"></span>
+            <span class="font-label text-xs uppercase tracking-[0.3em] text-primary">Quantum Talent Network</span>
+          </div>
+          <!-- 大标题 -->
+          <h1 class="font-display text-4xl font-light leading-[1.1] text-on-surface sm:text-6xl lg:text-7xl scroll-reveal" style="transition-delay: 0.1s;">
+            连接量子科技<br>
+            与下一代顶尖<span class="italic text-primary">人才</span>
+          </h1>
+          <!-- 副标题 -->
+          <p class="mt-8 max-w-xl text-base leading-relaxed text-on-surface-variant sm:text-lg scroll-reveal" style="transition-delay: 0.2s;">
+            汇聚超导、离子阱、光量子与量子通信四大前沿赛道的研究与工程机会。
+            为每一位探索者，找到通往量子前沿的坐标。
+          </p>
+          <!-- CTA 按钮组 -->
+          <div class="mt-10 flex flex-wrap items-center gap-4 scroll-reveal" style="transition-delay: 0.3s;">
+            <a href="opportunities.html" id="hero-cta-explore"
+               class="inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-medium text-on-primary transition-all hover:opacity-90 active:scale-[0.98]">
+              探索岗位
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+            <a href="tracks.html" id="hero-cta-tracks"
+               class="inline-flex items-center gap-2 rounded-full border border-white/20 px-7 py-3.5 text-sm font-medium text-on-surface transition-all hover:bg-white/5 hover:border-white/30 active:scale-[0.98]">
+              了解赛道
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 滚动指示器（左下） -->
+      <div class="absolute bottom-8 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 sm:flex" id="scroll-hint">
+        <span class="font-label text-[10px] uppercase tracking-[0.3em] text-on-surface-variant">Scroll</span>
+        <div class="flex h-9 w-5 items-start justify-center rounded-full border border-white/20 pt-2">
+          <span class="scroll-hint-dot h-1.5 w-1 rounded-full bg-primary"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Section 2: 为什么是量子科技（Why Quantum）—— 编辑式非对称布局 ===== -->
+    <section class="relative w-full bg-background py-24 sm:py-32" id="why-quantum">
+      <div class="mx-auto max-w-7xl px-6 sm:px-8">
+        <!-- 区段标签 -->
+        <div class="mb-16 flex items-center gap-3 scroll-reveal">
+          <span class="font-label text-xs uppercase tracking-[0.3em] text-primary">01 / Why Quantum</span>
+          <span class="h-px flex-1 bg-outline-variant"></span>
+        </div>
+
+        <!-- 左标题 + 右正文：非对称两栏（5/7 分割） -->
+        <div class="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-12">
+          <div class="md:col-span-5 scroll-reveal">
+            <h2 class="font-display text-3xl font-light leading-tight text-on-surface sm:text-4xl lg:text-5xl">
+              为什么是<br>量子科技
+            </h2>
+          </div>
+          <div class="md:col-span-7 scroll-reveal" style="transition-delay: 0.1s;">
+            <p class="text-base leading-[1.9] text-on-surface-variant sm:text-lg">
+              经典计算的物理极限正在逼近。当晶体管尺寸触及原子尺度，
+              摩尔定律的惯性已无法承载下一轮文明跃迁。
+              量子力学提供的不是更小的开关，而是<span class="text-on-surface">完全不同的计算范式</span>——
+              叠加、纠缠与干涉，让某些曾经不可解的问题，在多项式时间内被打开。
+            </p>
+            <p class="mt-6 text-base leading-[1.9] text-on-surface-variant sm:text-lg">
+              这意味着新的算力、新的安全边界、新的感知精度。
+              也意味着——需要新一代愿意在未知中工作的人才。
+            </p>
+          </div>
+        </div>
+
+        <!-- 三个价值点：非等宽、不同节奏，禁止三张相同图标卡 -->
+        <div class="mt-20 grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-8">
+          <!-- 价值点 1：偏宽 -->
+          <div class="md:col-span-5 scroll-reveal">
+            <div class="flex items-baseline gap-4">
+              <span class="font-label text-sm text-primary">01</span>
+              <span class="font-label text-[10px] uppercase tracking-[0.25em] text-on-surface-variant">Beyond Classical Limits</span>
+            </div>
+            <h3 class="mt-4 font-display text-2xl font-light text-on-surface sm:text-3xl">突破计算边界</h3>
+            <p class="mt-4 text-sm leading-relaxed text-on-surface-variant">
+              量子并行性让分子模拟、组合优化与密码分析跨越经典算力的指数级壁垒。
+            </p>
+          </div>
+          <!-- 价值点 2：偏窄 -->
+          <div class="md:col-span-3 md:mt-16 scroll-reveal" style="transition-delay: 0.1s;">
+            <div class="flex items-baseline gap-4">
+              <span class="font-label text-sm text-primary">02</span>
+              <span class="font-label text-[10px] uppercase tracking-[0.25em] text-on-surface-variant">Quantum-Safe</span>
+            </div>
+            <h3 class="mt-4 font-display text-2xl font-light text-on-surface sm:text-3xl">保障信息安全</h3>
+            <p class="mt-4 text-sm leading-relaxed text-on-surface-variant">
+              量子密钥分发提供物理层面的无条件安全，重新定义密码学边界。
+            </p>
+          </div>
+          <!-- 价值点 3：中等 -->
+          <div class="md:col-span-4 md:mt-8 scroll-reveal" style="transition-delay: 0.2s;">
+            <div class="flex items-baseline gap-4">
+              <span class="font-label text-sm text-primary">03</span>
+              <span class="font-label text-[10px] uppercase tracking-[0.25em] text-on-surface-variant">Precision Beyond Perception</span>
+            </div>
+            <h3 class="mt-4 font-display text-2xl font-light text-on-surface sm:text-3xl">感知微观世界</h3>
+            <p class="mt-4 text-sm leading-relaxed text-on-surface-variant">
+              量子传感以原子级精度测量磁场、引力与时间，拓展人类感知的极限。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Section 3: 四大量子技术前沿（Tracks）—— 编号式纵向索引条带 ===== -->
+    <section class="relative w-full bg-surface-container-lowest py-24 sm:py-32" id="tracks">
+      <div class="mx-auto max-w-7xl px-6 sm:px-8">
+        <!-- 区段标签 -->
+        <div class="mb-4 flex items-center gap-3 scroll-reveal">
+          <span class="font-label text-xs uppercase tracking-[0.3em] text-primary">02 / Tracks</span>
+          <span class="h-px flex-1 bg-outline-variant"></span>
+        </div>
+        <h2 class="mb-20 font-display text-3xl font-light leading-tight text-on-surface sm:text-4xl lg:text-5xl scroll-reveal">
+          四大量子技术前沿
+        </h2>
+
+        <!-- 赛道条带列表：每条全宽横向条带，左右交替偏置 -->
+        <div class="divide-y divide-outline-variant">
+
+          <!-- 赛道-01 超导量子（文字在左） -->
+          <a href="tracks-superconducting.html" id="track-01"
+             class="group grid grid-cols-1 items-center gap-6 py-12 transition-colors hover:bg-white/[0.02] md:grid-cols-12 md:gap-8 md:py-16 scroll-reveal">
+            <!-- 大编号 -->
+            <div class="md:col-span-2">
+              <span class="font-display text-6xl font-light text-primary/30 transition-colors group-hover:text-primary/50 sm:text-7xl">01</span>
+            </div>
+            <!-- 内容（左偏置：col-span-7） -->
+            <div class="md:col-span-7">
+              <span class="font-label text-xs uppercase tracking-[0.25em] text-on-surface-variant">Superconducting Quantum</span>
+              <h3 class="mt-2 font-display text-3xl font-light text-on-surface sm:text-4xl">超导量子</h3>
+              <p class="mt-4 max-w-xl text-sm leading-relaxed text-on-surface-variant sm:text-base">
+                基于超导电路的量子计算路线，产业界最成熟、扩展性最强的技术方向之一。
+              </p>
+            </div>
+            <!-- 探索链接 -->
+            <div class="md:col-span-3 md:flex md:justify-end">
+              <span class="inline-flex items-center gap-2 font-label text-sm text-primary transition-all group-hover:gap-3">
+                探索赛道
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </span>
+            </div>
+          </a>
+
+          <!-- 赛道-02 离子阱（文字在右：编号与内容右对齐） -->
+          <a href="tracks-ion-trap.html" id="track-02"
+             class="group grid grid-cols-1 items-center gap-6 py-12 transition-colors hover:bg-white/[0.02] md:grid-cols-12 md:gap-8 md:py-16 scroll-reveal">
+            <!-- 探索链接（桌面端在左） -->
+            <div class="order-3 md:order-1 md:col-span-3">
+              <span class="inline-flex items-center gap-2 font-label text-sm text-primary transition-all group-hover:gap-3 md:flex-row-reverse">
+                <i data-lucide="arrow-left" class="w-4 h-4 md:block hidden"></i>
+                <i data-lucide="arrow-right" class="w-4 h-4 md:hidden"></i>
+                探索赛道
+              </span>
+            </div>
+            <!-- 内容（右偏置：col-span-7，文字右对齐） -->
+            <div class="order-2 md:col-span-7 md:text-right">
+              <span class="font-label text-xs uppercase tracking-[0.25em] text-on-surface-variant">Ion Trap Quantum</span>
+              <h3 class="mt-2 font-display text-3xl font-light text-on-surface sm:text-4xl">离子阱</h3>
+              <p class="mt-4 max-w-xl text-sm leading-relaxed text-on-surface-variant sm:text-base md:ml-auto">
+                利用囚禁离子作为量子比特，具有长相干时间与高保真门操作的优势。
+              </p>
+            </div>
+            <!-- 大编号（桌面端在右） -->
+            <div class="order-1 md:order-3 md:col-span-2 md:text-right">
+              <span class="font-display text-6xl font-light text-primary/30 transition-colors group-hover:text-primary/50 sm:text-7xl">02</span>
+            </div>
+          </a>
+
+          <!-- 赛道-03 光量子（文字在左） -->
+          <a href="tracks-photonics.html" id="track-03"
+             class="group grid grid-cols-1 items-center gap-6 py-12 transition-colors hover:bg-white/[0.02] md:grid-cols-12 md:gap-8 md:py-16 scroll-reveal">
+            <div class="md:col-span-2">
+              <span class="font-display text-6xl font-light text-primary/30 transition-colors group-hover:text-primary/50 sm:text-7xl">03</span>
+            </div>
+            <div class="md:col-span-7">
+              <span class="font-label text-xs uppercase tracking-[0.25em] text-on-surface-variant">Photonic Quantum</span>
+              <h3 class="mt-2 font-display text-3xl font-light text-on-surface sm:text-4xl">光量子</h3>
+              <p class="mt-4 max-w-xl text-sm leading-relaxed text-on-surface-variant sm:text-base">
+                以单光子和纠缠光子作为信息载体，具备室温运行与天然兼容光通信网络的潜力。
+              </p>
+            </div>
+            <div class="md:col-span-3 md:flex md:justify-end">
+              <span class="inline-flex items-center gap-2 font-label text-sm text-primary transition-all group-hover:gap-3">
+                探索赛道
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </span>
+            </div>
+          </a>
+
+          <!-- 赛道-04 量子通信与测量（文字在右） -->
+          <a href="tracks-communication-sensing.html" id="track-04"
+             class="group grid grid-cols-1 items-center gap-6 py-12 transition-colors hover:bg-white/[0.02] md:grid-cols-12 md:gap-8 md:py-16 scroll-reveal">
+            <div class="order-3 md:order-1 md:col-span-3">
+              <span class="inline-flex items-center gap-2 font-label text-sm text-primary transition-all group-hover:gap-3 md:flex-row-reverse">
+                <i data-lucide="arrow-left" class="w-4 h-4 md:block hidden"></i>
+                <i data-lucide="arrow-right" class="w-4 h-4 md:hidden"></i>
+                探索赛道
+              </span>
+            </div>
+            <div class="order-2 md:col-span-7 md:text-right">
+              <span class="font-label text-xs uppercase tracking-[0.25em] text-on-surface-variant">Quantum Communication &amp; Sensing</span>
+              <h3 class="mt-2 font-display text-3xl font-light text-on-surface sm:text-4xl">量子通信与测量</h3>
+              <p class="mt-4 max-w-xl text-sm leading-relaxed text-on-surface-variant sm:text-base md:ml-auto">
+                面向信息安全与精密测量的量子技术落地场景。
+              </p>
+            </div>
+            <div class="order-1 md:order-3 md:col-span-2 md:text-right">
+              <span class="font-display text-6xl font-light text-primary/30 transition-colors group-hover:text-primary/50 sm:text-7xl">04</span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Section 4: 精选岗位（Featured Jobs）—— 杂志目录式排版 ===== -->
+    <section class="relative w-full bg-background py-24 sm:py-32" id="featured-jobs">
+      <div class="mx-auto max-w-7xl px-6 sm:px-8">
+        <!-- 区段标签 + 标题行（左标题 + 右链接） -->
+        <div class="mb-4 flex items-center gap-3 scroll-reveal">
+          <span class="font-label text-xs uppercase tracking-[0.3em] text-primary">03 / Featured</span>
+          <span class="h-px flex-1 bg-outline-variant"></span>
+        </div>
+        <div class="mb-16 flex items-end justify-between gap-6 scroll-reveal">
+          <h2 class="font-display text-3xl font-light leading-tight text-on-surface sm:text-4xl lg:text-5xl">
+            精选岗位
+          </h2>
+          <a href="opportunities.html" id="view-all-jobs"
+             class="inline-flex shrink-0 items-center gap-2 font-label text-sm text-on-surface-variant transition-colors hover:text-primary">
+            查看全部岗位
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+
+        <!-- 岗位列表：杂志目录式，每行一个岗位 -->
+        <div class="divide-y divide-outline-variant">
+
+          <!-- 岗位-1 超导量子比特工程师 -->
+          <a href="job-detail.html?id=1" id="job-1"
+             class="group grid grid-cols-12 items-center gap-3 py-6 transition-colors hover:bg-white/[0.02] sm:gap-4 scroll-reveal">
+            <span class="col-span-1 font-label text-xs text-on-surface-variant">01</span>
+            <div class="col-span-11 flex flex-col gap-2 sm:col-span-5 sm:flex-row sm:items-center sm:gap-3">
+              <span class="font-display text-lg font-medium text-on-surface transition-colors group-hover:text-primary sm:text-xl">超导量子比特工程师</span>
+              <span class="w-fit rounded-sm bg-primary/15 px-2 py-0.5 font-label text-[10px] uppercase tracking-wider text-primary">急招</span>
+            </div>
+            <span class="col-span-6 text-sm text-on-surface-variant sm:col-span-2">本源量子</span>
+            <span class="col-span-4 text-sm text-on-surface-variant sm:col-span-2">合肥</span>
+            <div class="col-span-12 flex flex-wrap items-center gap-1.5 sm:col-span-1 sm:justify-end">
+              <i data-lucide="arrow-right" class="w-4 h-4 text-on-surface-variant transition-all group-hover:translate-x-1 group-hover:text-primary"></i>
+            </div>
+          </a>
+
+          <!-- 岗位-2 离子阱量子物理学家 -->
+          <a href="job-detail.html?id=2" id="job-2"
+             class="group grid grid-cols-12 items-center gap-3 py-6 transition-colors hover:bg-white/[0.02] sm:gap-4 scroll-reveal">
+            <span class="col-span-1 font-label text-xs text-on-surface-variant">02</span>
+            <div class="col-span-11 flex flex-col gap-2 sm:col-span-5 sm:flex-row sm:items-center sm:gap-3">
+              <span class="font-display text-lg font-medium text-on-surface transition-colors group-hover:text-primary sm:text-xl">离子阱量子物理学家</span>
+              <span class="w-fit rounded-sm bg-primary/15 px-2 py-0.5 font-label text-[10px] uppercase tracking-wider text-primary">急招</span>
+            </div>
+            <span class="col-span-6 text-sm text-on-surface-variant sm:col-span-2">中国科学院</span>
+            <span class="col-span-4 text-sm text-on-surface-variant sm:col-span-2">北京</span>
+            <div class="col-span-12 flex flex-wrap items-center gap-1.5 sm:col-span-1 sm:justify-end">
+              <i data-lucide="arrow-right" class="w-4 h-4 text-on-surface-variant transition-all group-hover:translate-x-1 group-hover:text-primary"></i>
+            </div>
+          </a>
+
+          <!-- 岗位-3 光量子科学家 -->
+          <a href="job-detail.html?id=3" id="job-3"
+             class="group grid grid-cols-12 items-center gap-3 py-6 transition-colors hover:bg-white/[0.02] sm:gap-4 scroll-reveal">
+            <span class="col-span-1 font-label text-xs text-on-surface-variant">03</span>
+            <div class="col-span-11 flex flex-col gap-2 sm:col-span-5 sm:flex-row sm:items-center sm:gap-3">
+              <span class="font-display text-lg font-medium text-on-surface transition-colors group-hover:text-primary sm:text-xl">光量子科学家</span>
+              <span class="w-fit rounded-sm bg-primary/15 px-2 py-0.5 font-label text-[10px] uppercase tracking-wider text-primary">急招</span>
+            </div>
+            <span class="col-span-6 text-sm text-on-surface-variant sm:col-span-2">百度量子计算研究所</span>
+            <span class="col-span-4 text-sm text-on-surface-variant sm:col-span-2">北京</span>
+            <div class="col-span-12 flex flex-wrap items-center gap-1.5 sm:col-span-1 sm:justify-end">
+              <i data-lucide="arrow-right" class="w-4 h-4 text-on-surface-variant transition-all group-hover:translate-x-1 group-hover:text-primary"></i>
+            </div>
+          </a>
+
+          <!-- 岗位-4 量子密码研究员 -->
+          <a href="job-detail.html?id=4" id="job-4"
+             class="group grid grid-cols-12 items-center gap-3 py-6 transition-colors hover:bg-white/[0.02] sm:gap-4 scroll-reveal">
+            <span class="col-span-1 font-label text-xs text-on-surface-variant">04</span>
+            <div class="col-span-11 flex flex-col gap-2 sm:col-span-5 sm:flex-row sm:items-center sm:gap-3">
+              <span class="font-display text-lg font-medium text-on-surface transition-colors group-hover:text-primary sm:text-xl">量子密码研究员</span>
+              <span class="w-fit rounded-sm bg-primary/15 px-2 py-0.5 font-label text-[10px] uppercase tracking-wider text-primary">急招</span>
+            </div>
+            <span class="col-span-6 text-sm text-on-surface-variant sm:col-span-2">国盾量子</span>
+            <span class="col-span-4 text-sm text-on-surface-variant sm:col-span-2">合肥</span>
+            <div class="col-span-12 flex flex-wrap items-center gap-1.5 sm:col-span-1 sm:justify-end">
+              <i data-lucide="arrow-right" class="w-4 h-4 text-on-surface-variant transition-all group-hover:translate-x-1 group-hover:text-primary"></i>
+            </div>
+          </a>
+
+          <!-- 岗位-5 量子算法研究员（非急招，无急招标签） -->
+          <a href="job-detail.html?id=5" id="job-5"
+             class="group grid grid-cols-12 items-center gap-3 py-6 transition-colors hover:bg-white/[0.02] sm:gap-4 scroll-reveal">
+            <span class="col-span-1 font-label text-xs text-on-surface-variant">05</span>
+            <div class="col-span-11 flex flex-col gap-2 sm:col-span-5 sm:flex-row sm:items-center sm:gap-3">
+              <span class="font-display text-lg font-medium text-on-surface transition-colors group-hover:text-primary sm:text-xl">量子算法研究员</span>
+            </div>
+            <span class="col-span-6 text-sm text-on-surface-variant sm:col-span-2">本源量子</span>
+            <span class="col-span-4 text-sm text-on-surface-variant sm:col-span-2">合肥</span>
+            <div class="col-span-12 flex flex-wrap items-center gap-1.5 sm:col-span-1 sm:justify-end">
+              <i data-lucide="arrow-right" class="w-4 h-4 text-on-surface-variant transition-all group-hover:translate-x-1 group-hover:text-primary"></i>
+            </div>
+          </a>
+
+        </div>
+
+        <!-- 岗位技术标签说明（编辑式补充信息，非卡片） -->
+        <div class="mt-12 flex flex-wrap items-center gap-x-6 gap-y-2 scroll-reveal">
+          <span class="font-label text-[10px] uppercase tracking-[0.25em] text-on-surface-variant">技术方向</span>
+          <span class="font-label text-xs text-on-surface-variant">量子比特设计</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">低温测控</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">微波工程</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">离子阱</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">量子门</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">激光系统</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">单光子源</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">线性光学</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">量子协议</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">量子密钥分发</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">量子随机数</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">密码学</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">量子算法</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">NISQ</span>
+          <span class="text-outline">·</span>
+          <span class="font-label text-xs text-on-surface-variant">量子优化</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Section 5: 合作机构（Partners）—— 极简纯文字 ===== -->
+    <section class="relative w-full bg-surface-container-lowest py-24 sm:py-32" id="partners">
+      <div class="mx-auto max-w-7xl px-6 sm:px-8">
+        <!-- 区段标签 -->
+        <div class="mb-16 flex items-center gap-3 scroll-reveal">
+          <span class="font-label text-xs uppercase tracking-[0.3em] text-primary">04 / Partners</span>
+          <span class="h-px flex-1 bg-outline-variant"></span>
+        </div>
+
+        <div class="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-16">
+          <!-- 左侧：编辑式文字介绍 -->
+          <div class="md:col-span-5 scroll-reveal">
+            <h2 class="font-display text-3xl font-light leading-tight text-on-surface sm:text-4xl lg:text-5xl">
+              合作机构
+            </h2>
+            <p class="mt-6 text-sm leading-[1.9] text-on-surface-variant sm:text-base">
+              来自高校、科研院所与产业前沿的研究力量，
+              共同构成量子人才网络的生态底座。
+              每一个机构，都是通往量子前沿的一条路径。
+            </p>
+          </div>
+          <!-- 右侧：机构名称列表（纯文字，不用 Logo） -->
+          <div class="md:col-span-7 scroll-reveal" style="transition-delay: 0.1s;">
+            <ul class="divide-y divide-outline-variant">
+              <!-- 机构-1 -->
+              <li class="flex items-center justify-between py-4">
+                <span class="font-display text-lg font-light text-on-surface sm:text-xl">本源量子</span>
+                <span class="font-label text-[10px] uppercase tracking-wider text-on-surface-variant">Origin Quantum</span>
+              </li>
+              <!-- 机构-2 -->
+              <li class="flex items-center justify-between py-4">
+                <span class="font-display text-lg font-light text-on-surface sm:text-xl">旋量量子</span>
+                <span class="font-label text-[10px] uppercase tracking-wider text-on-surface-variant">SpinQ</span>
+              </li>
+              <!-- 机构-3 -->
+              <li class="flex items-center justify-between py-4">
+                <span class="font-display text-lg font-light text-on-surface sm:text-xl">中国科学技术大学</span>
+                <span class="font-label text-[10px] uppercase tracking-wider text-on-surface-variant">USTC</span>
+              </li>
+              <!-- 机构-4 -->
+              <li class="flex items-center justify-between py-4">
+                <span class="font-display text-lg font-light text-on-surface sm:text-xl">中国科学院</span>
+                <span class="font-label text-[10px] uppercase tracking-wider text-on-surface-variant">CAS</span>
+              </li>
+              <!-- 机构-5 -->
+              <li class="flex items-center justify-between py-4">
+                <span class="font-display text-lg font-light text-on-surface sm:text-xl">百度量子计算研究所</span>
+                <span class="font-label text-[10px] uppercase tracking-wider text-on-surface-variant">Baidu Quantum</span>
+              </li>
+              <!-- 机构-6 -->
+              <li class="flex items-center justify-between py-4">
+                <span class="font-display text-lg font-light text-on-surface sm:text-xl">达摩院量子实验室</span>
+                <span class="font-label text-[10px] uppercase tracking-wider text-on-surface-variant">DAMO Quantum</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Section 6: 加入量子人才网络（Join）—— 液态玻璃面板 ===== -->
+    <section class="relative w-full bg-background py-24 sm:py-32" id="join">
+      <div class="mx-auto max-w-7xl px-6 sm:px-8">
+        <!-- 区段标签 -->
+        <div class="mb-16 flex items-center gap-3 scroll-reveal">
+          <span class="font-label text-xs uppercase tracking-[0.3em] text-primary">05 / Join</span>
+          <span class="h-px flex-1 bg-outline-variant"></span>
+        </div>
+
+        <div class="grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-16 md:items-center">
+          <!-- 左侧：大标题 + 描述 -->
+          <div class="md:col-span-6 scroll-reveal">
+            <h2 class="font-display text-3xl font-light leading-tight text-on-surface sm:text-4xl lg:text-5xl">
+              加入量子人才网络
+            </h2>
+            <p class="mt-6 max-w-md text-sm leading-[1.9] text-on-surface-variant sm:text-base">
+              无论你是物理学家、算法工程师还是低温电子工程师，
+              将简历投递至下方邮箱，或扫码联系我们的顾问。
+              我们会在 48 小时内回应每一位探索者。
+            </p>
+          </div>
+          <!-- 右侧：液态玻璃面板 -->
+          <div class="md:col-span-6 scroll-reveal" style="transition-delay: 0.1s;">
+            <div class="liquid-glass rounded-2xl p-7 sm:p-8">
+              <!-- 邮箱投递 -->
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <div class="font-label text-[10px] uppercase tracking-[0.25em] text-on-surface-variant">Email</div>
+                  <div id="join-email" class="mt-1.5 truncate font-label text-sm text-on-surface sm:text-base">talent@quantum-network.example</div>
+                </div>
+                <button id="btn-copy-email"
+                        class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/15 px-4 py-2 text-xs font-medium text-on-surface transition-all hover:bg-white/5 hover:border-white/25 active:scale-[0.98]">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  复制
+                </button>
+              </div>
+
+              <!-- 分隔线 -->
+              <div class="my-6 h-px bg-outline-variant"></div>
+
+              <!-- 微信咨询 -->
+              <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                  <div class="font-label text-[10px] uppercase tracking-[0.25em] text-on-surface-variant">WeChat</div>
+                  <div id="join-wechat" class="mt-1.5 truncate font-label text-sm text-on-surface sm:text-base">QuantumTalent</div>
+                </div>
+                <button id="btn-copy-wechat"
+                        class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/15 px-4 py-2 text-xs font-medium text-on-surface transition-all hover:bg-white/5 hover:border-white/25 active:scale-[0.98]">
+                  <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                  复制
+                </button>
+              </div>
+
+              <!-- 操作按钮 -->
+              <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                <a href="mailto:talent@quantum-network.example" id="btn-email-submit"
+                   class="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-on-primary transition-all hover:opacity-90 active:scale-[0.98]">
+                  <i data-lucide="mail" class="w-4 h-4"></i>
+                  邮箱投递
+                </a>
+                <button id="btn-wechat-consult"
+                        class="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-white/20 px-6 py-3 text-sm font-medium text-on-surface transition-all hover:bg-white/5 hover:border-white/30 active:scale-[0.98]">
+                  <i data-lucide="message-circle" class="w-4 h-4"></i>
+                  微信咨询
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Section 7: Footer ===== -->
+    <footer class="w-full border-t border-outline-variant bg-surface-container-lowest">
+      <div class="mx-auto max-w-7xl px-6 py-12 sm:px-8">
+        <div class="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+          <!-- 左侧：平台名称 + 版权 -->
+          <div>
+            <div class="flex items-center gap-2.5">
+              <span class="flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-white/5 font-label text-xs font-medium text-primary">Q</span>
+              <span class="font-sans text-sm font-medium tracking-tight text-on-surface">量子人才网络</span>
+            </div>
+            <p class="mt-3 font-label text-[10px] uppercase tracking-wider text-on-surface-variant">
+              Human Exploration × Quantum Frontier
+            </p>
+            <p class="mt-2 text-xs text-on-surface-variant">
+              © 2024 量子人才网络 · 连接量子科技与下一代顶尖人才
+            </p>
+          </div>
+          <!-- 右侧：快速链接 -->
+          <nav class="flex flex-wrap items-center gap-x-8 gap-y-3" aria-label="Footer 快速导航">
+            <a href="tracks.html" class="text-sm text-on-surface-variant transition-colors hover:text-primary">赛道</a>
+            <a href="opportunities.html" class="text-sm text-on-surface-variant transition-colors hover:text-primary">岗位</a>
+            <a href="#join" id="footer-join" class="text-sm text-on-surface-variant transition-colors hover:text-primary">加入我们</a>
+          </nav>
+        </div>
+      </div>
+    </footer>
+  </main>
+  <!-- @main-content:end -->
+
+  <script>
+    $(function() {
+      // === 滚动渐入动画（IntersectionObserver） ===
+      // 对所有 .scroll-reveal 元素，进入视口时添加 .visible 类触发过渡。
+      // 支持 prefers-reduced-motion：CSS 中已将 scroll-reveal 设为始终可见。
+      var $reveals = $('.scroll-reveal');
+      var reveals = $reveals.get();
+      if ('IntersectionObserver' in window && reveals.length > 0) {
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+        reveals.forEach(function(el) { observer.observe(el); });
+      } else {
+        // 兜底：直接显示
+        reveals.forEach(function(el) { el.classList.add('visible'); });
+      }
+
+      // === 复制邮箱 ===
+      // 点击复制按钮：
+      // 1. 读取 #join-email 文本
+      // 2. 使用 navigator.clipboard 写入剪贴板
+      // 3. 临时将按钮文字改为"已复制"，1.5 秒后恢复
+      $('#btn-copy-email').on('click', function() {
+        var email = $('#join-email').text().trim();
+        var $btn = $(this);
+        var original = $btn.html();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(email).then(function() {
+            $btn.html('<i data-lucide="check" class="w-3.5 h-3.5"></i> 已复制');
+            lucide.createIcons();
+            setTimeout(function() { $btn.html(original); lucide.createIcons(); }, 1500);
+          }).catch(function() {
+            console.log('剪贴板写入失败，邮箱：' + email);
+          });
+        } else {
+          console.log('当前环境不支持剪贴板 API，邮箱：' + email);
+        }
+      });
+
+      // === 复制微信号 ===
+      // 行为同复制邮箱，目标为 #join-wechat 的文本
+      $('#btn-copy-wechat').on('click', function() {
+        var wechat = $('#join-wechat').text().trim();
+        var $btn = $(this);
+        var original = $btn.html();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(wechat).then(function() {
+            $btn.html('<i data-lucide="check" class="w-3.5 h-3.5"></i> 已复制');
+            lucide.createIcons();
+            setTimeout(function() { $btn.html(original); lucide.createIcons(); }, 1500);
+          }).catch(function() {
+            console.log('剪贴板写入失败，微信号：' + wechat);
+          });
+        } else {
+          console.log('当前环境不支持剪贴板 API，微信号：' + wechat);
+        }
+      });
+
+      // === 微信咨询按钮 ===
+      // 后续应实现：弹出包含客服二维码图片的模态框，并提供"复制微信号"辅助操作。
+      // 当前原型仅记录日志。
+      $('#btn-wechat-consult').on('click', function() {
+        console.log('微信咨询：应弹出客服二维码模态框，微信号 QuantumTalent');
+      });
+
+      // === 导航滚动时增强背景 ===
+      // 滚动超过 Hero 高度的 20% 时，为 header 增加更深的背景模糊。
+      // 后续开发者可按需调整阈值或增加阴影。
+      var $header = $('#site-header');
+      $(window).on('scroll', function() {
+        if ($(window).scrollTop() > 80) {
+          $header.addClass('scrolled');
+        } else {
+          $header.removeClass('scrolled');
+        }
+      });
+
+      // === 滚动指示器点击平滑滚动到下一区段 ===
+      $('#scroll-hint').on('click', function() {
+        var $next = $('#why-quantum');
+        if ($next.length) {
+          $('html, body').animate({ scrollTop: $next.offset().top - 60 }, 600);
+        }
+      });
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>
