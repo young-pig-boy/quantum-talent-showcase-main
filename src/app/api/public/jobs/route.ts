@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
-import { PUBLIC_JOB_FIELDS, mapPublicationToPublicJob } from '@/lib/public-jobs/mapper';
+import { mapPublicationToPublicJob } from '@/lib/public-jobs/mapper';
+import { resolvePublicJobFields } from '@/lib/public-jobs/en-columns';
 
 /**
  * GET /api/public/jobs
@@ -31,12 +32,13 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0', 10);
 
     const supabase = createServerClient();
+    const fields = await resolvePublicJobFields(supabase);
 
     // Only published publications — no JOINs to jobs/companies
     // Explicit field whitelist — public_company_name excluded from public API
     let query = supabase
       .from('job_publications')
-      .select(PUBLIC_JOB_FIELDS, { count: 'exact' })
+      .select(fields, { count: 'exact' })
       .eq('status', 'published')
       .order('published_at', { ascending: false });
 

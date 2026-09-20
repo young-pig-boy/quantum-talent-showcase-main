@@ -17,8 +17,15 @@ import { normalizePublicLocation } from '@/lib/public-location';
 export const PUBLIC_JOB_FIELDS =
   'id,slug,public_job_code,public_title,city,salary_display,responsibilities,requirements,education,experience,track,status,published_at,summary,direction,seniority,tags,urgent,urgent_started_at,urgent_expires_at,featured';
 
+/** 英文动态字段（迁移 002 之前这些列不存在，需通过 probe 降级，见 en-columns.ts） */
+export const PUBLIC_JOB_EN_FIELDS =
+  'public_title_en,summary_en,direction_en,seniority_en';
+
+export const PUBLIC_JOB_FIELDS_WITH_EN = `${PUBLIC_JOB_FIELDS},${PUBLIC_JOB_EN_FIELDS}`;
+
 /**
  * 将 Supabase 返回的 job_publications 行映射为 PublicJob。
+ * 兼容降级：行中若不含 _en 字段（迁移未执行），一律映射为空串 → 前台英文模式回落中文。
  */
 export function mapPublicationToPublicJob(pub: Record<string, unknown>): PublicJob {
   return {
@@ -26,6 +33,7 @@ export function mapPublicationToPublicJob(pub: Record<string, unknown>): PublicJ
     slug: (pub.slug as string) || '',
     public_job_code: (pub.public_job_code as string) || null,
     title: (pub.public_title as string) || '',
+    titleEn: (pub.public_title_en as string) || '',
     track: (pub.track as string) || '',
     city: normalizePublicLocation((pub.city as string) || ''),
     education: (pub.education as string) || '',
@@ -34,8 +42,11 @@ export function mapPublicationToPublicJob(pub: Record<string, unknown>): PublicJ
     responsibilities: parseStringArray(pub.responsibilities),
     salary_display: (pub.salary_display as string) || '',
     summary: (pub.summary as string) || '',
+    summaryEn: (pub.summary_en as string) || '',
     direction: (pub.direction as string) || '',
+    directionEn: (pub.direction_en as string) || '',
     seniority: (pub.seniority as string) || '',
+    seniorityEn: (pub.seniority_en as string) || '',
     tags: parseTagsArray(pub.tags),
     urgent: (pub.urgent as boolean) || false,
     urgent_started_at: (pub.urgent_started_at as string) || null,

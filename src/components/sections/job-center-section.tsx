@@ -7,6 +7,7 @@ import { getTrackById } from '@/lib/data';
 import { trackEvent } from '@/lib/analytics';
 import { usePublicJobs, isUrgentActive, type PublicJob } from '@/hooks/use-public-jobs';
 import { useLanguageMode } from '@/lib/language-mode';
+import { localizedPublicJob } from '@/lib/public-job';
 import { localizeCity, localizeDisplayValue, localizeEducation } from '@/lib/localized-helpers';
 import { JobCode } from '@/components/job/job-code';
 
@@ -110,9 +111,10 @@ export function JobCenterSection() {
 
 function JobCenterRow({ job, index }: { job: PublicJob; index: number }) {
   const track = job.track ? getTrackById(job.track) : null;
-  const directionDisplay = job.direction || track?.name || '';
-  const showUrgent = isUrgentActive(job);
   const { mode } = useLanguageMode();
+  const loc = localizedPublicJob(job, mode);
+  const directionDisplay = loc.direction || track?.name || '';
+  const showUrgent = isUrgentActive(job);
 
   return (
     <ScrollReveal key={job.id} delay={index * 0.05}>
@@ -153,7 +155,7 @@ function JobCenterRow({ job, index }: { job: PublicJob; index: number }) {
             )}
           </div>
           <h4 className="text-base font-medium text-foreground transition-colors group-hover:text-accent-light sm:text-lg">
-            {job.title}
+            {loc.title}
           </h4>
           {(directionDisplay || job.public_job_code) && (
             <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5">

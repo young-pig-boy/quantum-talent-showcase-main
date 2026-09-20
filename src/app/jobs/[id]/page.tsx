@@ -14,6 +14,7 @@ import {
 import { format } from 'date-fns';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
+import { LJobTitle, LJobDirection, LJobSeniority, LJobSummary } from '@/components/job/localized-job-fields';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { LiquidGlass } from '@/components/ui/liquid-glass';
 import { ShareButton } from '@/components/job/share-button';
@@ -118,7 +119,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
               </div>
 
               <h1 className="mb-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-                {job.title}
+                <LJobTitle job={job} />
               </h1>
 
               {/* Job code — 便于候选人在沟通/投递时引用 */}
@@ -154,7 +155,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                 {job.seniority && (
                   <>
                     <span className="text-muted-foreground/30">|</span>
-                    <span><EText zh="职级：" en="Seniority: " />{job.seniority}</span>
+                    <span><EText zh="职级：" en="Seniority: " /><LJobSeniority job={job} /></span>
                   </>
                 )}
                 {job.published_at && (
@@ -185,7 +186,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                 )}
                 {job.direction && (
                   <span className="inline-block rounded-full border border-accent/30 bg-accent/5 px-3 py-1 text-xs text-accent-light">
-                    {job.direction}
+                    <LJobDirection job={job} />
                   </span>
                 )}
               </div>
@@ -221,7 +222,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                       <EText zh="岗位简介" en="Overview" />
                     </h2>
                     <p className="text-lg leading-[1.8] text-foreground">
-                      {job.summary}
+                      <LJobSummary job={job} />
                     </p>
                   </div>
                 </ScrollReveal>

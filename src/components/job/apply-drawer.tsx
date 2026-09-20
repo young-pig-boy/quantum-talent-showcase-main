@@ -24,6 +24,8 @@ export interface ApplyJobData {
   id: string;
   slug: string;
   title: string;
+  /** 英文标题（未录入时英文模式回落 title） */
+  titleEn?: string;
   city: string;
   /** 岗位业务编号（QJ-26-XXXX），来自 job_publications.public_job_code */
   public_job_code?: string | null;
@@ -156,7 +158,7 @@ export function ApplyDrawer({ job, children, initialTab = 'online' }: ApplyDrawe
           {/* Job info */}
           <div className="rounded-xl border border-border bg-muted p-4">
             <p className="mb-1 text-xs text-muted-foreground">{t('当前意向岗位', 'Position of Interest')}</p>
-            <h3 className="text-lg font-medium text-foreground">{job.title}</h3>
+            <h3 className="text-lg font-medium text-foreground">{en && job.titleEn ? job.titleEn : job.title}</h3>
             {job.public_job_code && <JobCode code={job.public_job_code} className="mt-1" />}
             <p className="mt-1 text-sm text-muted-foreground">
               {job.city}

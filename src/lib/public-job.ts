@@ -12,6 +12,8 @@ export interface PublicJob {
   /** 岗位业务编号（QJ-26-XXXX），直接来自 job_publications.public_job_code，Showcase 只读不生成 */
   public_job_code: string | null;
   title: string;
+  /** 英文标题（Console 录入；为空时英文模式回落中文） */
+  titleEn: string;
   track: string;
   city: string;
   education: string;
@@ -22,13 +24,56 @@ export interface PublicJob {
   published_at: string;
   status: string;
   summary: string;
+  summaryEn: string;
   direction: string;
+  directionEn: string;
   seniority: string;
+  seniorityEn: string;
   tags: string[];
   urgent: boolean;
   urgent_started_at: string | null;
   urgent_expires_at: string | null;
   featured: boolean;
+}
+
+/** 动态展示字段（中/英取值结果） */
+export interface LocalizedJobFields {
+  title: string;
+  direction: string;
+  seniority: string;
+  summary: string;
+}
+
+/** localizedPublicJob 允许只传动态展示字段（Server→Client 传参时类型更宽松） */
+export type LocalizedJobInput = Partial<
+  Pick<
+    PublicJob,
+    'title' | 'titleEn' | 'direction' | 'directionEn' | 'seniority' | 'seniorityEn' | 'summary' | 'summaryEn'
+  >
+> & { title: string };
+
+/**
+ * 按语言模式取岗位动态展示字段。
+ * 约定：英文模式优先取 _en 字段，未录入（空）时回落中文原值，绝不留空。
+ */
+export function localizedPublicJob(
+  job: LocalizedJobInput,
+  mode: 'zh' | 'en'
+): LocalizedJobFields {
+  if (mode !== 'en') {
+    return {
+      title: job.title,
+      direction: job.direction ?? '',
+      seniority: job.seniority ?? '',
+      summary: job.summary ?? '',
+    };
+  }
+  return {
+    title: job.titleEn || job.title,
+    direction: job.directionEn || job.direction || '',
+    seniority: job.seniorityEn || job.seniority || '',
+    summary: job.summaryEn || job.summary || '',
+  };
 }
 
 /**

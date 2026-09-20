@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
-import { PUBLIC_JOB_FIELDS, mapPublicationToPublicJob } from '@/lib/public-jobs/mapper';
+import { mapPublicationToPublicJob } from '@/lib/public-jobs/mapper';
+import { resolvePublicJobFields } from '@/lib/public-jobs/en-columns';
 
 /**
  * GET /api/public/jobs/[slug]
@@ -14,10 +15,11 @@ export async function GET(
   try {
     const { slug } = await params;
     const supabase = createServerClient();
+    const fields = await resolvePublicJobFields(supabase);
 
     const { data, error } = await supabase
       .from('job_publications')
-      .select(PUBLIC_JOB_FIELDS)
+      .select(fields)
       .eq('slug', slug)
       .eq('status', 'published')
       .single();

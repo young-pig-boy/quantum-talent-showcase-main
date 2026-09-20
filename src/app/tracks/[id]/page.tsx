@@ -9,6 +9,7 @@ import { LiquidGlass } from '@/components/ui/liquid-glass';
 import { getTrackById, siteConfig } from '@/lib/data';
 import type { PublicJob } from '@/hooks/use-public-jobs';
 import { JobCode } from '@/components/job/job-code';
+import { LJobTitle, LJobDirection } from '@/components/job/localized-job-fields';
 import { EText, ZhOnly, ECity, EValue } from '@/lib/language-mode';
 
 function getBaseUrl() {
@@ -24,10 +25,13 @@ interface TrackJobItem {
   slug: string;
   public_job_code: string | null;
   title: string;
+  titleEn: string;
   city: string;
   experience: string;
   direction: string;
+  directionEn: string;
   seniority: string;
+  seniorityEn: string;
 }
 
 async function getTrackJobs(trackId: string): Promise<TrackJobItem[]> {
@@ -43,10 +47,13 @@ async function getTrackJobs(trackId: string): Promise<TrackJobItem[]> {
       slug: job.slug,
       public_job_code: job.public_job_code,
       title: job.title,
+      titleEn: job.titleEn || '',
       city: job.city,
       experience: job.experience,
       direction: job.direction || '',
+      directionEn: job.directionEn || '',
       seniority: job.seniority || '',
+      seniorityEn: job.seniorityEn || '',
     }));
   } catch {
     return [];
@@ -271,13 +278,13 @@ export default async function TrackDetailPage({ params }: PageProps) {
                       </div>
                       <div className="md:col-span-6">
                         <h3 className="text-lg font-medium text-foreground transition-colors group-hover:text-accent-light">
-                          {job.title}
+                          <LJobTitle job={job} />
                         </h3>
                         {(job.direction || job.public_job_code) && (
                           <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5">
                             {job.direction && (
                               <p className="text-xs text-muted-foreground">
-                                {job.direction}{job.seniority ? ` · ${job.seniority}` : ''}
+                                <LJobDirection job={job} withSeniority />
                               </p>
                             )}
                             {job.public_job_code && <JobCode code={job.public_job_code} />}

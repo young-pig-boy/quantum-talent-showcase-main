@@ -8,6 +8,7 @@ import { getTrackById } from '@/lib/data';
 import { trackEvent } from '@/lib/analytics';
 import { JobCode } from '@/components/job/job-code';
 import { useLanguageMode } from '@/lib/language-mode';
+import { localizedPublicJob } from '@/lib/public-job';
 import { localizeCity, localizeDisplayValue, localizeEducation } from '@/lib/localized-helpers';
 
 interface JobCardProps {
@@ -19,12 +20,13 @@ export function JobCard({ job, index = 0 }: JobCardProps) {
   const { mode } = useLanguageMode();
   const isEn = mode === 'en';
   const track = job.track ? getTrackById(job.track) : null;
+  const loc = localizedPublicJob(job, mode);
 
   // direction display: prefer direction, fallback to track name
-  const directionDisplay = job.direction || track?.name || '';
+  const directionDisplay = loc.direction || track?.name || '';
   // seniority display
-  const directionWithLevel = job.seniority
-    ? `${directionDisplay} · ${job.seniority}`
+  const directionWithLevel = loc.seniority
+    ? `${directionDisplay} · ${loc.seniority}`
     : directionDisplay;
 
   // Tags: max 6
@@ -68,7 +70,7 @@ export function JobCard({ job, index = 0 }: JobCardProps) {
         </div>
 
         <h3 className="text-lg font-medium text-foreground transition-colors group-hover:text-accent-light">
-          {job.title}
+          {loc.title}
         </h3>
 
         {/* Direction · Seniority + Job Code */}
@@ -86,7 +88,7 @@ export function JobCard({ job, index = 0 }: JobCardProps) {
         {/* Summary */}
         {job.summary && (
           <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-            {job.summary}
+            {loc.summary}
           </p>
         )}
 

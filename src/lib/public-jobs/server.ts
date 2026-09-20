@@ -11,7 +11,8 @@
  */
 
 import { createServerClient } from '@/lib/supabase/server';
-import { PUBLIC_JOB_FIELDS, mapPublicationToPublicJob } from './mapper';
+import { mapPublicationToPublicJob } from './mapper';
+import { resolvePublicJobFields } from './en-columns';
 import type { PublicJob } from '@/lib/public-job';
 
 export interface RelatedJobItem {
@@ -29,10 +30,11 @@ export interface RelatedJobItem {
  */
 export async function getPublicJobBySlug(slug: string): Promise<PublicJob | null> {
   const supabase = createServerClient();
+  const fields = await resolvePublicJobFields(supabase);
 
   const { data, error } = await supabase
     .from('job_publications')
-    .select(PUBLIC_JOB_FIELDS)
+    .select(fields)
     .eq('slug', slug)
     .eq('status', 'published')
     .single();
@@ -60,10 +62,11 @@ export async function getRelatedJobs(
   if (!track) return [];
 
   const supabase = createServerClient();
+  const fields = await resolvePublicJobFields(supabase);
 
   const { data, error } = await supabase
     .from('job_publications')
-    .select(PUBLIC_JOB_FIELDS)
+    .select(fields)
     .eq('status', 'published')
     .eq('track', track)
     .neq('slug', excludeSlug)
