@@ -8,7 +8,7 @@ import { getTrackById } from '@/lib/data';
 import { trackEvent } from '@/lib/analytics';
 import { JobCode } from '@/components/job/job-code';
 import { useLanguageMode } from '@/lib/language-mode';
-import { localizeCity, localizeDisplayValue } from '@/lib/localized-helpers';
+import { localizeCity, localizeDisplayValue, localizeEducation } from '@/lib/localized-helpers';
 
 interface JobCardProps {
   job: PublicJob;
@@ -123,7 +123,7 @@ export function JobCard({ job, index = 0 }: JobCardProps) {
       <div className="md:col-span-2">
         {job.education && (
           <p className="text-sm text-muted-foreground">
-            <span className="text-xs text-muted-foreground/60">{isEn ? 'Degree: ' : '学历：'}</span>{job.education}
+            <span className="text-xs text-muted-foreground/60">{isEn ? 'Education: ' : '学历：'}</span>{localizeEducation(job.education, mode)}
           </p>
         )}
         {job.experience && (

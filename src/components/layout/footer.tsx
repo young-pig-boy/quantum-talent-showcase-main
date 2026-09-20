@@ -13,7 +13,7 @@ export function Footer() {
                 Q
               </span>
               <span className="text-base font-medium tracking-tight text-foreground">
-                {siteConfig.platformName}
+                <EText zh={siteConfig.platformName} en={siteConfig.platformNameEn} />
               </span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
@@ -45,16 +45,16 @@ export function Footer() {
               <EText zh="赛道" en="Tracks" />
             </p>
             <Link href="/tracks/superconducting" className="text-muted-foreground transition-colors hover:text-foreground">
-              超导量子
+              <EText zh="超导量子" en="Superconducting Quantum" />
             </Link>
             <Link href="/tracks/ion-trap" className="text-muted-foreground transition-colors hover:text-foreground">
-              离子阱
+              <EText zh="离子阱" en="Trapped-Ion Quantum" />
             </Link>
             <Link href="/tracks/photonics" className="text-muted-foreground transition-colors hover:text-foreground">
-              光量子
+              <EText zh="光量子" en="Photonic Quantum" />
             </Link>
             <Link href="/tracks/communication-sensing" className="text-muted-foreground transition-colors hover:text-foreground">
-              量子通信与测量
+              <EText zh="量子通信与测量" en="Quantum Communication & Sensing" />
             </Link>
           </nav>
 

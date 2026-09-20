@@ -248,7 +248,7 @@ export function Navbar() {
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleLogoClick}
-          aria-label={`${brandConfig.name}官网（在新标签页打开）`}
+          aria-label={mode === 'en' ? `${brandConfig.name} website (opens in a new tab)` : `${brandConfig.name}官网（在新标签页打开）`}
           className="group flex shrink-0 flex-col items-center rounded-full px-3 py-1 transition-colors hover:bg-surface-glass focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -258,7 +258,7 @@ export function Navbar() {
             className="h-6 w-auto object-contain transition-opacity duration-300 group-hover:opacity-90"
           />
           <span className="mt-0.5 text-[9px] font-light leading-none tracking-wide text-muted-foreground transition-colors duration-300 group-hover:text-foreground hidden sm:block">
-            {brandConfig.logoSubtext}
+            {mode === 'en' ? brandConfig.logoSubtextEn : brandConfig.logoSubtext}
           </span>
         </a>
 

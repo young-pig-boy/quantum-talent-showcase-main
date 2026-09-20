@@ -7,7 +7,7 @@ import { getTrackById } from '@/lib/data';
 import { trackEvent } from '@/lib/analytics';
 import { usePublicJobs, isUrgentActive, type PublicJob } from '@/hooks/use-public-jobs';
 import { useLanguageMode } from '@/lib/language-mode';
-import { localizeCity, localizeDisplayValue } from '@/lib/localized-helpers';
+import { localizeCity, localizeDisplayValue, localizeEducation } from '@/lib/localized-helpers';
 import { JobCode } from '@/components/job/job-code';
 
 export function JobCenterSection() {
@@ -175,7 +175,7 @@ function JobCenterRow({ job, index }: { job: PublicJob; index: number }) {
         {/* Education / Experience */}
         <div className="md:col-span-2">
           <p className="text-sm text-muted-foreground">
-            {job.education && <><span className="text-xs text-muted-foreground/60">{mode === 'en' ? 'Education:' : '学历：'}</span>{job.education}</>}
+            {job.education && <><span className="text-xs text-muted-foreground/60">{mode === 'en' ? 'Education: ' : '学历：'}</span>{localizeEducation(job.education, mode)}</>}
           </p>
           {job.experience && (
             <p className="mt-0.5 text-sm text-muted-foreground">

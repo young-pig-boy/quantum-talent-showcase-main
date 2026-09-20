@@ -8,6 +8,7 @@
  * 不驱动任何业务数据（岗位数据永远是原始中文）。
  */
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { localizeDisplayValue } from '@/lib/localized-helpers';
 
 export type LanguageMode = 'zh' | 'en';
 
@@ -147,12 +148,6 @@ interface EValueProps {
 export function EValue({ value, className }: EValueProps) {
   const { mode } = useLanguageMode();
   if (mode !== 'en') return <span className={className}>{value}</span>;
-  const valueMap: Record<string, string> = {
-    '待确认': 'To be confirmed',
-    '待从详情页确认': 'To be confirmed',
-    '未明确': 'Not specified',
-    '面议': 'Negotiable',
-    '不限': 'Not specified',
-  };
-  return <span className={className}>{valueMap[value] ?? value}</span>;
+  // 单一数据源：状态值 / 学历 / 经验 的枚举映射统一维护在 localized-helpers。
+  return <span className={className}>{localizeDisplayValue(value, mode)}</span>;
 }

@@ -23,6 +23,8 @@ export const brandConfig = {
   logo: '/brand/jiachi-logo-transparent.png',
   logoAlt: 'X-GIANTS GROUP · 嘉驰国际',
   logoSubtext: '点击查看官网',
+  /** English Mode 时展示的 Logo 副文字 */
+  logoSubtextEn: 'Visit our website',
   homepageUrl: 'https://x-giants.com/',
   display: '仅Logo' as const,
 };

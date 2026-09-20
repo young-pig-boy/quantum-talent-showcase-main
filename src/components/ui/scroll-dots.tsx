@@ -2,22 +2,25 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
+import { useLanguageMode } from '@/lib/language-mode';
 
 interface Section {
   id: string;
-  label: string;
+  labelZh: string;
+  labelEn: string;
 }
 
 const sections: Section[] = [
-  { id: 'hero', label: '首页' },
-  { id: 'why', label: '为什么是量子科技' },
-  { id: 'tracks', label: '前沿赛道' },
-  { id: 'jobs', label: '精选岗位' },
-  { id: 'join', label: '联系我们' },
+  { id: 'hero', labelZh: '首页', labelEn: 'Home' },
+  { id: 'why', labelZh: '为什么是量子科技', labelEn: 'Why Quantum Tech' },
+  { id: 'tracks', labelZh: '前沿赛道', labelEn: 'Frontier Tracks' },
+  { id: 'jobs', labelZh: '精选岗位', labelEn: 'Featured Positions' },
+  { id: 'join', labelZh: '联系我们', labelEn: 'Contact Us' },
 ];
 
 export function ScrollDots() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const { mode } = useLanguageMode();
 
   const scrollTo = useCallback((sectionId: string) => {
     if (sectionId === 'hero') {
@@ -83,8 +86,8 @@ export function ScrollDots() {
         <button
           key={section.id}
           onClick={() => scrollTo(section.id)}
-          aria-label={section.label}
-          title={section.label}
+          aria-label={mode === 'en' ? section.labelEn : section.labelZh}
+          title={mode === 'en' ? section.labelEn : section.labelZh}
           className={cn(
             'rounded-full transition-all duration-300',
             index === activeIndex

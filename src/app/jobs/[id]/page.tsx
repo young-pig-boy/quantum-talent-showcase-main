@@ -148,7 +148,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                   </>
                 )}
                 <span className="text-muted-foreground/30">|</span>
-                <span><EText zh="学历要求：" en="Education: " />{job.education}</span>
+                <span><EText zh="学历要求：" en="Education: " /><EValue value={job.education} /></span>
                 <span className="text-muted-foreground/30">|</span>
                 <span><EText zh="经验要求：" en="Experience: " /><EValue value={job.experience} /></span>
                 {job.seniority && (

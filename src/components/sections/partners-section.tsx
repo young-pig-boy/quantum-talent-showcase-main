@@ -9,6 +9,8 @@ const PARTNERS_DATA = getPartners();
 
 function PartnerItem({ partner, isDuplicated }: { partner: Partner; isDuplicated?: boolean }) {
   const id = isDuplicated ? `${partner.id}-dup` : partner.id;
+  const { mode } = useLanguageMode();
+  const displayName = mode === 'en' ? partner.englishName || partner.name : partner.name;
 
   if (partner.logo) {
     return (
@@ -18,7 +20,7 @@ function PartnerItem({ partner, isDuplicated }: { partner: Partner; isDuplicated
       >
         <img
           src={partner.logo}
-          alt={partner.name}
+          alt={displayName}
           className="h-8 w-auto object-contain opacity-40 grayscale transition-all duration-300 hover:opacity-80 hover:grayscale-0"
         />
       </div>
@@ -31,7 +33,7 @@ function PartnerItem({ partner, isDuplicated }: { partner: Partner; isDuplicated
       className="flex shrink-0 items-center px-6"
     >
       <span className="text-sm font-medium text-muted-foreground whitespace-nowrap transition-colors duration-300 hover:text-muted-foreground">
-        {partner.name}
+        {displayName}
       </span>
     </div>
   );
@@ -83,21 +85,24 @@ export function PartnersSection() {
         {reducedMotion ? (
           /* Static grid for reduced motion */
           <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-8">
-            {PARTNERS_DATA.map((partner) => (
+            {PARTNERS_DATA.map((partner) => {
+              const displayName = mode === 'en' ? partner.englishName || partner.name : partner.name;
+              return (
               <div key={partner.id} className="flex items-center justify-center px-6">
                 {partner.logo ? (
                   <img
                     src={partner.logo}
-                    alt={partner.name}
+                    alt={displayName}
                     className="h-8 w-auto object-contain opacity-50 grayscale"
                   />
                 ) : (
                   <span className="text-sm font-medium text-muted-foreground whitespace-nowrap">
-                    {partner.name}
+                    {displayName}
                   </span>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           /* Marquee */

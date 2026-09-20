@@ -315,7 +315,7 @@ export default async function TrackDetailPage({ params }: PageProps) {
                 <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
                   <div>
                     <h2 className="mb-2 text-2xl font-bold text-foreground sm:text-3xl">
-                      对 {track.name} 感兴趣？
+                      <EText zh={`对 ${track.name} 感兴趣？`} en={`Interested in ${track.name}?`} />
                     </h2>
                     <p className="text-muted-foreground">
                       <EText

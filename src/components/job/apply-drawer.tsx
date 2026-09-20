@@ -65,8 +65,8 @@ export function ApplyDrawer({ job, children, initialTab = 'online' }: ApplyDrawe
   };
 
   const handleSubmit = useCallback(async () => {
-    if (!form.full_name.trim()) { setSubmitError('请填写姓名'); return; }
-    if (!form.phone.trim() && !form.email.trim()) { setSubmitError('请至少填写手机号或邮箱'); return; }
+    if (!form.full_name.trim()) { setSubmitError(en ? 'Please enter your name' : '请填写姓名'); return; }
+    if (!form.phone.trim() && !form.email.trim()) { setSubmitError(en ? 'Please provide a phone number or an email' : '请至少填写手机号或邮箱'); return; }
 
     setSubmitting(true);
     setSubmitError('');
