@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import { mapPublicationToPublicJob } from '@/lib/public-jobs/mapper';
 import { resolvePublicJobFields } from '@/lib/public-jobs/en-columns';
+import { slugCandidates } from '@/lib/public-jobs/server';
 
 /**
  * GET /api/public/jobs/[slug]
@@ -17,12 +18,14 @@ export async function GET(
     const supabase = createServerClient();
     const fields = await resolvePublicJobFields(supabase);
 
+    const candidates = slugCandidates(slug);
+
     const { data, error } = await supabase
       .from('job_publications')
       .select(fields)
-      .eq('slug', slug)
       .eq('status', 'published')
-      .single();
+      .in('slug', candidates)
+      .maybeSingle();
 
     if (error || !data) {
       return NextResponse.json(

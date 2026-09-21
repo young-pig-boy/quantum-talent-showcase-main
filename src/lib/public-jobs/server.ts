@@ -22,6 +22,22 @@ import type { PublicJob } from '@/lib/public-job';
 export type RelatedJobItem = PublicJob;
 
 /**
+ * slug 归一化：Next 动态路由参数会把非 ASCII 字符以 percent-encoding 原样传入
+ * （例如 `量子…` → `%E9%87%8F…`），而库里存的是解码后的字面量。
+ * 因此查询前先尝试解码，并同时保留原始值作为候选，两种调用路径都能命中。
+ */
+export function slugCandidates(raw: string): string[] {
+  let decoded = raw;
+  try {
+    decoded = decodeURIComponent(raw);
+  } catch {
+    // 含非法转义序列（如字面量 %）时保留原值
+    decoded = raw;
+  }
+  return Array.from(new Set([decoded, raw].filter((s) => s.length > 0)));
+}
+
+/**
  * 按 slug 读取一个已发布岗位。
  * - 不存在 / 已下架 → 返回 null（由调用方 notFound()）
  * - 数据库真实异常 → 记录服务端日志并抛出（由 error.tsx 接管）
@@ -29,17 +45,17 @@ export type RelatedJobItem = PublicJob;
 export async function getPublicJobBySlug(slug: string): Promise<PublicJob | null> {
   const supabase = createServerClient();
   const fields = await resolvePublicJobFields(supabase);
+  const candidates = slugCandidates(slug);
+  if (candidates.length === 0) return null;
 
   const { data, error } = await supabase
     .from('job_publications')
     .select(fields)
-    .eq('slug', slug)
     .eq('status', 'published')
-    .single();
+    .in('slug', candidates)
+    .maybeSingle();
 
   if (error) {
-    // PGRST116 = 查询结果为 0 行，等价于岗位不存在，属正常业务分支
-    if (error.code === 'PGRST116') return null;
     console.error('[getPublicJobBySlug] Supabase error:', error);
     throw new Error('岗位数据加载失败，请稍后重试');
   }
