@@ -27,6 +27,7 @@ export interface PublicJob {
   responsibilities: string[];
   responsibilitiesEn: string[];
   salary_display: string;
+  salaryDisplayEn: string;
   published_at: string;
   status: string;
   summary: string;

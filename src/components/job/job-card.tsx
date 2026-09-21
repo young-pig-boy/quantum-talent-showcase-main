@@ -116,7 +116,7 @@ export function JobCard({ job, index = 0 }: JobCardProps) {
         )}
         {job.salary_display && (
           <p className="mt-0.5 text-xs text-muted-foreground">
-            <span className="text-muted-foreground/60">{isEn ? 'Pay: ' : '薪资：'}</span>{job.salary_display}
+            <span className="text-muted-foreground/60">{isEn ? 'Pay: ' : '薪资：'}</span>{isEn && job.salaryDisplayEn ? job.salaryDisplayEn : job.salary_display}
           </p>
         )}
       </div>

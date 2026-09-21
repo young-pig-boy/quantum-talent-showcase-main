@@ -89,6 +89,23 @@ export function LJobBulletList({
 }
 
 /**
+ * LJobSalary — 薪资展示（英文模式优先用 salaryDisplayEn，空则回落中文原值）。
+ */
+export function LJobSalary({
+  salary,
+  salaryEn,
+  className,
+}: {
+  salary?: string | null;
+  salaryEn?: string | null;
+  className?: string;
+}) {
+  const { mode } = useLanguageMode();
+  const text = mode === 'en' && salaryEn ? salaryEn : salary;
+  return <span className={className}>{text}</span>;
+}
+
+/**
  * TrackName — 赛道名称（英文模式用静态数据的 englishName）。
  */
 export function TrackName({ name, englishName }: { name: string; englishName?: string }) {

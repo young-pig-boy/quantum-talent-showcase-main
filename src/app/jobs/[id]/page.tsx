@@ -14,7 +14,7 @@ import {
 import { format } from 'date-fns';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
-import { LJobTitle, LJobDirection, LJobSeniority, LJobSummary, LJobEducation, LJobExperience, LJobBulletList, LJobTags, TrackName } from '@/components/job/localized-job-fields';
+import { LJobTitle, LJobDirection, LJobSeniority, LJobSummary, LJobEducation, LJobExperience, LJobBulletList, LJobTags, LJobSalary, TrackName } from '@/components/job/localized-job-fields';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { LiquidGlass } from '@/components/ui/liquid-glass';
 import { ShareButton } from '@/components/job/share-button';
@@ -139,7 +139,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                 {job.salary_display && (
                   <>
                     <span className="text-muted-foreground/30">|</span>
-                    <span><EText zh="薪资：" en="Compensation: " />{job.salary_display}</span>
+                    <span><EText zh="薪资：" en="Compensation: " /><LJobSalary salary={job.salary_display} salaryEn={job.salaryDisplayEn} /></span>
                   </>
                 )}
                 {!job.salary_display && (
