@@ -9,8 +9,8 @@ import { LiquidGlass } from '@/components/ui/liquid-glass';
 import { getTrackById, siteConfig } from '@/lib/data';
 import type { PublicJob } from '@/hooks/use-public-jobs';
 import { JobCode } from '@/components/job/job-code';
-import { LJobTitle, LJobDirection } from '@/components/job/localized-job-fields';
-import { EText, ZhOnly, ECity, EValue } from '@/lib/language-mode';
+import { LJobTitle, LJobDirection, LJobExperience } from '@/components/job/localized-job-fields';
+import { EText, ZhOnly, ECity } from '@/lib/language-mode';
 
 function getBaseUrl() {
   return `http://localhost:${process.env.DEPLOY_RUN_PORT || 5000}`;
@@ -28,6 +28,7 @@ interface TrackJobItem {
   titleEn: string;
   city: string;
   experience: string;
+  experienceEn: string;
   direction: string;
   directionEn: string;
   seniority: string;
@@ -50,6 +51,7 @@ async function getTrackJobs(trackId: string): Promise<TrackJobItem[]> {
       titleEn: job.titleEn || '',
       city: job.city,
       experience: job.experience,
+      experienceEn: job.experienceEn || '',
       direction: job.direction || '',
       directionEn: job.directionEn || '',
       seniority: job.seniority || '',
@@ -295,7 +297,7 @@ export default async function TrackDetailPage({ params }: PageProps) {
                         <p className="text-sm text-muted-foreground"><ECity city={job.city} /></p>
                       </div>
                       <div className="md:col-span-2">
-                        <p className="text-sm text-muted-foreground"><EValue value={job.experience} /></p>
+                        <p className="text-sm text-muted-foreground"><LJobExperience job={job} /></p>
                       </div>
                       <div className="flex items-center justify-end md:col-span-1">
                         <ArrowRight className="h-4 w-4 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-accent" />

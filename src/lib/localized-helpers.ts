@@ -249,6 +249,30 @@ export function localizeExperience(value: string, mode: LanguageMode): string {
 }
 
 /**
+ * 学历要求双语取值（迁移 003 起支持 DB 英文列）。
+ * 英文模式优先取 Console 录入的 educationEn；未录入时回落枚举映射表 → 中文原值。
+ */
+export function localizedEducation(
+  job: { education?: string | null; educationEn?: string | null },
+  mode: LanguageMode
+): string {
+  if (mode === 'en' && job.educationEn) return job.educationEn;
+  return localizeEducation(job.education ?? '', mode);
+}
+
+/**
+ * 经验要求双语取值（迁移 003 起支持 DB 英文列）。
+ * 英文模式优先取 Console 录入的 experienceEn；未录入时回落枚举映射表/数字兜底 → 中文原值。
+ */
+export function localizedExperience(
+  job: { experience?: string | null; experienceEn?: string | null },
+  mode: LanguageMode
+): string {
+  if (mode === 'en' && job.experienceEn) return job.experienceEn;
+  return localizeExperience(job.experience ?? '', mode);
+}
+
+/**
  * Localize a finite status / education / experience display value for E Mode.
  * Returns the original value if no mapping exists or mode is 'zh'.
  */

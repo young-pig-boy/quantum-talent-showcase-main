@@ -8,7 +8,7 @@ import { trackEvent } from '@/lib/analytics';
 import { usePublicJobs, isUrgentActive, type PublicJob } from '@/hooks/use-public-jobs';
 import { useLanguageMode } from '@/lib/language-mode';
 import { localizedPublicJob } from '@/lib/public-job';
-import { localizeCity, localizeDisplayValue, localizeEducation } from '@/lib/localized-helpers';
+import { localizeCity, localizedEducation, localizedExperience } from '@/lib/localized-helpers';
 import { JobCode } from '@/components/job/job-code';
 
 export function JobCenterSection() {
@@ -176,12 +176,14 @@ function JobCenterRow({ job, index }: { job: PublicJob; index: number }) {
 
         {/* Education / Experience */}
         <div className="md:col-span-2">
-          <p className="text-sm text-muted-foreground">
-            {job.education && <><span className="text-xs text-muted-foreground/60">{mode === 'en' ? 'Education: ' : '学历：'}</span>{localizeEducation(job.education, mode)}</>}
-          </p>
-          {job.experience && (
+          {(job.education || job.educationEn) && (
+            <p className="text-sm text-muted-foreground">
+              <span className="text-xs text-muted-foreground/60">{mode === 'en' ? 'Education: ' : '学历：'}</span>{localizedEducation(job, mode)}
+            </p>
+          )}
+          {(job.experience || job.experienceEn) && (
             <p className="mt-0.5 text-sm text-muted-foreground">
-              <span className="text-xs text-muted-foreground/60">{mode === 'en' ? 'Experience:' : '经验：'}</span>{localizeDisplayValue(job.experience, mode)}
+              <span className="text-xs text-muted-foreground/60">{mode === 'en' ? 'Experience:' : '经验：'}</span>{localizedExperience(job, mode)}
             </p>
           )}
         </div>

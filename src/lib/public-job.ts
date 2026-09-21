@@ -17,7 +17,11 @@ export interface PublicJob {
   track: string;
   city: string;
   education: string;
+  /** 学历要求英文（Console 录入；为空时英文模式回落映射表 → 中文） */
+  educationEn: string;
   experience: string;
+  /** 经验要求英文（Console 录入；为空时英文模式回落映射表 → 中文） */
+  experienceEn: string;
   requirements: string[];
   responsibilities: string[];
   salary_display: string;

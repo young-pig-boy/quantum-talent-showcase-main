@@ -9,7 +9,7 @@ import { trackEvent } from '@/lib/analytics';
 import { JobCode } from '@/components/job/job-code';
 import { useLanguageMode } from '@/lib/language-mode';
 import { localizedPublicJob } from '@/lib/public-job';
-import { localizeCity, localizeDisplayValue, localizeEducation } from '@/lib/localized-helpers';
+import { localizeCity, localizedEducation, localizedExperience } from '@/lib/localized-helpers';
 
 interface JobCardProps {
   job: PublicJob;
@@ -123,14 +123,14 @@ export function JobCard({ job, index = 0 }: JobCardProps) {
 
       {/* Education / Experience */}
       <div className="md:col-span-2">
-        {job.education && (
+        {(job.education || job.educationEn) && (
           <p className="text-sm text-muted-foreground">
-            <span className="text-xs text-muted-foreground/60">{isEn ? 'Education: ' : '学历：'}</span>{localizeEducation(job.education, mode)}
+            <span className="text-xs text-muted-foreground/60">{isEn ? 'Education: ' : '学历：'}</span>{localizedEducation(job, mode)}
           </p>
         )}
-        {job.experience && (
+        {(job.experience || job.experienceEn) && (
           <p className="mt-0.5 text-sm text-muted-foreground">
-            <span className="text-xs text-muted-foreground/60">{isEn ? 'Experience: ' : '经验：'}</span>{localizeDisplayValue(job.experience, mode)}
+            <span className="text-xs text-muted-foreground/60">{isEn ? 'Experience: ' : '经验：'}</span>{localizedExperience(job, mode)}
           </p>
         )}
       </div>

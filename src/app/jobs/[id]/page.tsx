@@ -14,7 +14,7 @@ import {
 import { format } from 'date-fns';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
-import { LJobTitle, LJobDirection, LJobSeniority, LJobSummary } from '@/components/job/localized-job-fields';
+import { LJobTitle, LJobDirection, LJobSeniority, LJobSummary, LJobEducation, LJobExperience } from '@/components/job/localized-job-fields';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { LiquidGlass } from '@/components/ui/liquid-glass';
 import { ShareButton } from '@/components/job/share-button';
@@ -25,7 +25,7 @@ import { getTrackById, siteConfig } from '@/lib/data';
 import { contact } from '@/lib/contact';
 import { isUrgentActive } from '@/lib/public-job';
 import { getPublicJobBySlug, getRelatedJobs } from '@/lib/public-jobs/server';
-import { EText, EnOnly, ECity, EValue } from '@/lib/language-mode';
+import { EText, EnOnly, ECity } from '@/lib/language-mode';
 
 function formatDate(isoString: string): string {
   if (!isoString) return '';
@@ -149,9 +149,9 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                   </>
                 )}
                 <span className="text-muted-foreground/30">|</span>
-                <span><EText zh="学历要求：" en="Education: " /><EValue value={job.education} /></span>
+                <span><EText zh="学历要求：" en="Education: " /><LJobEducation job={job} /></span>
                 <span className="text-muted-foreground/30">|</span>
-                <span><EText zh="经验要求：" en="Experience: " /><EValue value={job.experience} /></span>
+                <span><EText zh="经验要求：" en="Experience: " /><LJobExperience job={job} /></span>
                 {job.seniority && (
                   <>
                     <span className="text-muted-foreground/30">|</span>

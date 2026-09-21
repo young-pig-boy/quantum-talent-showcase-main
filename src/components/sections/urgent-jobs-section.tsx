@@ -8,7 +8,7 @@ import { trackEvent } from '@/lib/analytics';
 import { usePublicJobs, isUrgentActive, type PublicJob } from '@/hooks/use-public-jobs';
 import { useLanguageMode } from '@/lib/language-mode';
 import { localizedPublicJob } from '@/lib/public-job';
-import { localizeCity, localizeDisplayValue } from '@/lib/localized-helpers';
+import { localizeCity, localizedExperience } from '@/lib/localized-helpers';
 import { JobCode } from '@/components/job/job-code';
 
 export function UrgentJobsSection() {
@@ -188,12 +188,12 @@ function UrgentJobRow({ job, index }: { job: PublicJob; index: number }) {
 
         {/* Experience */}
         <div className="md:col-span-2">
-          {job.experience && (
+          {(job.experience || job.experienceEn) && (
             <p className="text-sm text-muted-foreground">
               <span className="text-xs text-muted-foreground/60">
                 {mode === 'en' ? 'Experience: ' : '经验：'}
               </span>
-              {localizeDisplayValue(job.experience, mode)}
+              {localizedExperience(job, mode)}
             </p>
           )}
         </div>

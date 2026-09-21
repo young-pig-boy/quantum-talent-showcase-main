@@ -17,11 +17,17 @@ import { normalizePublicLocation } from '@/lib/public-location';
 export const PUBLIC_JOB_FIELDS =
   'id,slug,public_job_code,public_title,city,salary_display,responsibilities,requirements,education,experience,track,status,published_at,summary,direction,seniority,tags,urgent,urgent_started_at,urgent_expires_at,featured';
 
-/** 英文动态字段（迁移 002 之前这些列不存在，需通过 probe 降级，见 en-columns.ts） */
+/** 英文动态字段（迁移 003 全量：标题/摘要/方向/职级/学历/经验，需通过 probe 降级，见 en-columns.ts） */
 export const PUBLIC_JOB_EN_FIELDS =
+  'public_title_en,summary_en,direction_en,seniority_en,education_en,experience_en';
+
+/** 迁移 002 的英文列（003 未执行时降级使用） */
+export const PUBLIC_JOB_EN_FIELDS_V2 =
   'public_title_en,summary_en,direction_en,seniority_en';
 
 export const PUBLIC_JOB_FIELDS_WITH_EN = `${PUBLIC_JOB_FIELDS},${PUBLIC_JOB_EN_FIELDS}`;
+
+export const PUBLIC_JOB_FIELDS_WITH_EN_V2 = `${PUBLIC_JOB_FIELDS},${PUBLIC_JOB_EN_FIELDS_V2}`;
 
 /**
  * 将 Supabase 返回的 job_publications 行映射为 PublicJob。
@@ -37,7 +43,9 @@ export function mapPublicationToPublicJob(pub: Record<string, unknown>): PublicJ
     track: (pub.track as string) || '',
     city: normalizePublicLocation((pub.city as string) || ''),
     education: (pub.education as string) || '',
+    educationEn: (pub.education_en as string) || '',
     experience: (pub.experience as string) || '',
+    experienceEn: (pub.experience_en as string) || '',
     requirements: parseStringArray(pub.requirements),
     responsibilities: parseStringArray(pub.responsibilities),
     salary_display: (pub.salary_display as string) || '',
