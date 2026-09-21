@@ -8,7 +8,7 @@
  * 不驱动任何业务数据（岗位数据永远是原始中文）。
  */
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import { localizeDisplayValue } from '@/lib/localized-helpers';
+import { localizeCity, localizeDisplayValue } from '@/lib/localized-helpers';
 
 export type LanguageMode = 'zh' | 'en';
 
@@ -112,28 +112,10 @@ interface ECityProps {
 
 export function ECity({ city, className }: ECityProps) {
   const { mode } = useLanguageMode();
-  if (mode !== 'en') return <span className={className}>{city}</span>;
-  // Inline lightweight mapping to avoid circular imports
-  const cityMap: Record<string, string> = {
-    '北京': 'Beijing', '上海': 'Shanghai', '深圳': 'Shenzhen',
-    '杭州': 'Hangzhou', '合肥': 'Hefei', '广州': 'Guangzhou',
-    '南京': 'Nanjing', '苏州': 'Suzhou', '成都': 'Chengdu',
-    '武汉': 'Wuhan', '西安': "Xi'an", '重庆': 'Chongqing',
-    '天津': 'Tianjin', '长沙': 'Changsha', '郑州': 'Zhengzhou',
-    '青岛': 'Qingdao', '济南': 'Jinan', '无锡': 'Wuxi',
-    '宁波': 'Ningbo', '东莞': 'Dongguan', '佛山': 'Foshan',
-    '厦门': 'Xiamen', '珠海': 'Zhuhai', '大连': 'Dalian',
-    '沈阳': 'Shenyang', '哈尔滨': 'Harbin', '昆明': 'Kunming',
-    '贵阳': 'Guiyang', '太原': 'Taiyuan', '福州': 'Fuzhou',
-    '南昌': 'Nanchang', '南宁': 'Nanning', '兰州': 'Lanzhou',
-    '全国': 'Nationwide', '海外': 'Overseas', '远程': 'Remote',
-    '线上': 'Online', '不限': 'Anywhere',
-    '浙江': 'Zhejiang', '江苏': 'Jiangsu', '安徽': 'Anhui',
-    '广东': 'Guangdong', '四川': 'Sichuan', '湖北': 'Hubei',
-    '湖南': 'Hunan', '山东': 'Shandong', '河北': 'Hebei',
-    '河南': 'Henan',
-  };
-  return <span className={className}>{cityMap[city] ?? city}</span>;
+  // 委托给 localized-helpers 的统一解析链：城市映射未命中时
+  // 会继续尝试状态值映射（如城市字段被填成"待确认"→ To be confirmed）。
+  // localized-helpers 对本模块仅类型导入，无运行时循环依赖。
+  return <span className={className}>{localizeCity(city, mode)}</span>;
 }
 
 /* ──────────────────────────────────────────────
