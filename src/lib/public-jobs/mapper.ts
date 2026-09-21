@@ -17,24 +17,29 @@ import { normalizePublicLocation } from '@/lib/public-location';
 export const PUBLIC_JOB_FIELDS =
   'id,slug,public_job_code,public_title,city,salary_display,responsibilities,requirements,education,experience,track,status,published_at,summary,direction,seniority,tags,urgent,urgent_started_at,urgent_expires_at,featured';
 
-/** 英文动态字段（迁移 004 全量：标题/摘要/方向/职级/学历/经验/职责/要求，需通过 probe 降级，见 en-columns.ts） */
+/** 英文动态字段（迁移 005 全量：标题/摘要/方向/职级/学历/经验/职责/要求/标签，需通过 probe 降级，见 en-columns.ts） */
 export const PUBLIC_JOB_EN_FIELDS =
+  'public_title_en,summary_en,direction_en,seniority_en,education_en,experience_en,responsibilities_en,requirements_en,tags_en';
+
+/** 迁移 004 的英文列（005 未执行时降级使用） */
+export const PUBLIC_JOB_EN_FIELDS_V2 =
   'public_title_en,summary_en,direction_en,seniority_en,education_en,experience_en,responsibilities_en,requirements_en';
 
 /** 迁移 003 的英文列（004 未执行时降级使用） */
-export const PUBLIC_JOB_EN_FIELDS_V2 =
+export const PUBLIC_JOB_EN_FIELDS_V3 =
   'public_title_en,summary_en,direction_en,seniority_en,education_en,experience_en';
 
 /** 迁移 002 的英文列（003 未执行时降级使用） */
-export const PUBLIC_JOB_EN_FIELDS_V3 =
+export const PUBLIC_JOB_EN_FIELDS_V4 =
   'public_title_en,summary_en,direction_en,seniority_en';
 
 export const PUBLIC_JOB_FIELDS_WITH_EN = `${PUBLIC_JOB_FIELDS},${PUBLIC_JOB_EN_FIELDS}`;
 
 export const PUBLIC_JOB_FIELDS_WITH_EN_V2 = `${PUBLIC_JOB_FIELDS},${PUBLIC_JOB_EN_FIELDS_V2}`;
 
-/** 迁移 002 的英文列（003 未执行时降级使用） */
 export const PUBLIC_JOB_FIELDS_WITH_EN_V3 = `${PUBLIC_JOB_FIELDS},${PUBLIC_JOB_EN_FIELDS_V3}`;
+
+export const PUBLIC_JOB_FIELDS_WITH_EN_V4 = `${PUBLIC_JOB_FIELDS},${PUBLIC_JOB_EN_FIELDS_V4}`;
 
 /**
  * 将 Supabase 返回的 job_publications 行映射为 PublicJob。
@@ -65,6 +70,7 @@ export function mapPublicationToPublicJob(pub: Record<string, unknown>): PublicJ
     seniority: (pub.seniority as string) || '',
     seniorityEn: (pub.seniority_en as string) || '',
     tags: parseTagsArray(pub.tags),
+    tagsEn: parseTagsArray(pub.tags_en),
     urgent: (pub.urgent as boolean) || false,
     urgent_started_at: (pub.urgent_started_at as string) || null,
     urgent_expires_at: (pub.urgent_expires_at as string) || null,

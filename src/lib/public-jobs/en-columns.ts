@@ -14,6 +14,7 @@ import {
   PUBLIC_JOB_FIELDS_WITH_EN,
   PUBLIC_JOB_FIELDS_WITH_EN_V2,
   PUBLIC_JOB_FIELDS_WITH_EN_V3,
+  PUBLIC_JOB_FIELDS_WITH_EN_V4,
 } from './mapper';
 
 type SupabaseLike = {
@@ -59,6 +60,8 @@ export async function resolvePublicJobFields(client: SupabaseLike): Promise<stri
     fieldsCache = PUBLIC_JOB_FIELDS_WITH_EN_V2;
   } else if (await probe(client, PUBLIC_JOB_EN_FIELDS_V3_PROBE)) {
     fieldsCache = PUBLIC_JOB_FIELDS_WITH_EN_V3;
+  } else if (await probe(client, PUBLIC_JOB_EN_FIELDS_V4_PROBE)) {
+    fieldsCache = PUBLIC_JOB_FIELDS_WITH_EN_V4;
   } else {
     fieldsCache = PUBLIC_JOB_FIELDS;
   }
@@ -68,7 +71,9 @@ export async function resolvePublicJobFields(client: SupabaseLike): Promise<stri
 
 // 探针用的列清单（与 mapper 白名单保持一致，单独命名避免循环依赖困惑）
 const PUBLIC_JOB_EN_FIELDS_FULL_PROBE =
-  'public_title_en,summary_en,direction_en,seniority_en,education_en,experience_en,responsibilities_en,requirements_en';
+  'public_title_en,summary_en,direction_en,seniority_en,education_en,experience_en,responsibilities_en,requirements_en,tags_en';
 const PUBLIC_JOB_EN_FIELDS_V2_PROBE =
+  'public_title_en,summary_en,direction_en,seniority_en,education_en,experience_en,responsibilities_en,requirements_en';
+const PUBLIC_JOB_EN_FIELDS_V3_PROBE =
   'public_title_en,summary_en,direction_en,seniority_en,education_en,experience_en';
-const PUBLIC_JOB_EN_FIELDS_V3_PROBE = 'public_title_en,summary_en,direction_en,seniority_en';
+const PUBLIC_JOB_EN_FIELDS_V4_PROBE = 'public_title_en,summary_en,direction_en,seniority_en';

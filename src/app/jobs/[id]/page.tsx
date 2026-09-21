@@ -14,7 +14,7 @@ import {
 import { format } from 'date-fns';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
-import { LJobTitle, LJobDirection, LJobSeniority, LJobSummary, LJobEducation, LJobExperience, LJobBulletList } from '@/components/job/localized-job-fields';
+import { LJobTitle, LJobDirection, LJobSeniority, LJobSummary, LJobEducation, LJobExperience, LJobBulletList, LJobTags, TrackName } from '@/components/job/localized-job-fields';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { LiquidGlass } from '@/components/ui/liquid-glass';
 import { ShareButton } from '@/components/job/share-button';
@@ -25,7 +25,7 @@ import { getTrackById, siteConfig } from '@/lib/data';
 import { contact } from '@/lib/contact';
 import { isUrgentActive } from '@/lib/public-job';
 import { getPublicJobBySlug, getRelatedJobs } from '@/lib/public-jobs/server';
-import { EText, EnOnly, ECity } from '@/lib/language-mode';
+import { EText, ECity } from '@/lib/language-mode';
 
 function formatDate(isoString: string): string {
   if (!isoString) return '';
@@ -170,18 +170,11 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                 )}
               </div>
 
-              {/* E Mode note — only visible when language is EN */}
-              <EnOnly>
-                <p className="mt-4 text-xs text-muted-foreground/70">
-                  Job details are currently available in Chinese.
-                </p>
-              </EnOnly>
-
               {/* Track / Direction */}
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 {track && (
                   <span className="inline-block rounded-full border border-border bg-muted px-3 py-1 text-xs text-muted-foreground">
-                    {track.name}
+                    <TrackName name={track.name} englishName={track.englishName} />
                   </span>
                 )}
                 {job.direction && (
@@ -194,14 +187,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
               {/* Tags */}
               {job.tags && job.tags.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-1.5">
-                  {job.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-block rounded-md border border-border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                  <LJobTags tags={job.tags} tagsEn={job.tagsEn} />
                 </div>
               )}
             </div>

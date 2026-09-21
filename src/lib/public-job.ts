@@ -36,6 +36,7 @@ export interface PublicJob {
   seniority: string;
   seniorityEn: string;
   tags: string[];
+  tagsEn: string[];
   urgent: boolean;
   urgent_started_at: string | null;
   urgent_expires_at: string | null;
