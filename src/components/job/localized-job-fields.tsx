@@ -117,16 +117,21 @@ export function TrackName({ name, englishName }: { name: string; englishName?: s
  * LJobTags — 技术标签（英文模式优先用 tagsEn，按索引逐个回落中文，
  * 兼容中英数量不一致：英文缺某项时该项显示中文，不会错位丢标签）。
  */
-export function LJobTags({ tags, tagsEn }: { tags: string[]; tagsEn?: string[] }) {
+export function LJobTags({
+  tags,
+  tagsEn,
+  className = 'inline-block rounded-md border border-border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground',
+}: {
+  tags: string[];
+  tagsEn?: string[];
+  className?: string;
+}) {
   const { mode } = useLanguageMode();
   const useEn = mode === 'en' && tagsEn && tagsEn.length > 0;
   return (
     <>
       {tags.map((tag, i) => (
-        <span
-          key={`${tag}-${i}`}
-          className="inline-block rounded-md border border-border bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground"
-        >
+        <span key={`${tag}-${i}`} className={className}>
           {(useEn && tagsEn[i]) || tag}
         </span>
       ))}

@@ -7,6 +7,7 @@ import { isUrgentActive } from '@/hooks/use-public-jobs';
 import { getTrackById } from '@/lib/data';
 import { trackEvent } from '@/lib/analytics';
 import { JobCode } from '@/components/job/job-code';
+import { LJobTags } from '@/components/job/localized-job-fields';
 import { useLanguageMode } from '@/lib/language-mode';
 import { localizedPublicJob } from '@/lib/public-job';
 import { localizeCity, localizedEducation, localizedExperience } from '@/lib/localized-helpers';
@@ -95,14 +96,11 @@ export function JobCard({ job, index = 0 }: JobCardProps) {
         {/* Tags */}
         {visibleTags.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1.5">
-            {visibleTags.map((tag) => (
-              <span
-                key={tag}
-                className="inline-block rounded-md border border-border bg-muted px-2 py-0.5 text-[11px] leading-tight text-muted-foreground"
-              >
-                {tag}
-              </span>
-            ))}
+            <LJobTags
+              tags={visibleTags}
+              tagsEn={job.tagsEn}
+              className="inline-block rounded-md border border-border bg-muted px-2 py-0.5 text-[11px] leading-tight text-muted-foreground"
+            />
           </div>
         )}
       </div>
