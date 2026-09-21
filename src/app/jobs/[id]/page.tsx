@@ -266,14 +266,14 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                           </div>
                           <div className="md:col-span-8">
                             <h3 className="text-base font-medium text-foreground transition-colors group-hover:text-accent-light">
-                              {rj.title}
+                              <LJobTitle job={rj} />
                             </h3>
                             {rj.public_job_code && (
                               <JobCode code={rj.public_job_code} className="mt-0.5" />
                             )}
                           </div>
                           <div className="md:col-span-2">
-                            <p className="text-sm text-muted-foreground">{rj.city}</p>
+                            <p className="text-sm text-muted-foreground"><ECity city={rj.city} /></p>
                           </div>
                           <div className="flex items-center justify-end md:col-span-1">
                             <ArrowRight className="h-4 w-4 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-accent" />

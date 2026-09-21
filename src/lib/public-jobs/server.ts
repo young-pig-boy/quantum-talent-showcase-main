@@ -15,13 +15,11 @@ import { mapPublicationToPublicJob } from './mapper';
 import { resolvePublicJobFields } from './en-columns';
 import type { PublicJob } from '@/lib/public-job';
 
-export interface RelatedJobItem {
-  id: string;
-  slug: string;
-  public_job_code: string | null;
-  title: string;
-  city: string;
-}
+/**
+ * 详情页"同赛道岗位"列表项：完整 PublicJob（含 *_en 英文字段），供双语渲染。
+ * 查询走 resolvePublicJobFields 白名单，与详情页主岗位同构。
+ */
+export type RelatedJobItem = PublicJob;
 
 /**
  * 按 slug 读取一个已发布岗位。
@@ -78,14 +76,5 @@ export async function getRelatedJobs(
     return [];
   }
 
-  return (data || []).map((pub) => {
-    const job = mapPublicationToPublicJob(pub as Record<string, unknown>);
-    return {
-      id: job.id,
-      slug: job.slug,
-      public_job_code: job.public_job_code,
-      title: job.title,
-      city: job.city,
-    };
-  });
+  return (data || []).map((pub) => mapPublicationToPublicJob(pub as Record<string, unknown>));
 }
