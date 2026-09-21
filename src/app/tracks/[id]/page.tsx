@@ -149,7 +149,7 @@ export default async function TrackDetailPage({ params }: PageProps) {
               </ScrollReveal>
               <ScrollReveal delay={0.1} className="md:col-span-8">
                 <p className="text-base leading-[1.8] text-muted-foreground sm:text-lg">
-                  {track.overview}
+                  <EText zh={track.overview} en={track.overviewEn ?? track.overview} />
                 </p>
               </ScrollReveal>
             </div>
@@ -179,12 +179,12 @@ export default async function TrackDetailPage({ params }: PageProps) {
                       </div>
                       <div className="md:col-span-4">
                         <h3 className="text-lg font-semibold text-foreground">
-                          {route.name}
+                          <EText zh={route.name} en={route.nameEn ?? route.name} />
                         </h3>
                       </div>
                       <div className="md:col-span-7">
                         <p className="leading-[1.7] text-muted-foreground">
-                          {route.description}
+                          <EText zh={route.description} en={route.descriptionEn ?? route.description} />
                         </p>
                       </div>
                     </div>
@@ -211,7 +211,9 @@ export default async function TrackDetailPage({ params }: PageProps) {
                   {track.applications.map((app, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
-                      <span className="leading-[1.7] text-muted-foreground">{app}</span>
+                      <span className="leading-[1.7] text-muted-foreground">
+                        <EText zh={app} en={track.applicationsEn?.[index] ?? app} />
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -229,10 +231,10 @@ export default async function TrackDetailPage({ params }: PageProps) {
                   {track.talentTypes.map((talent, index) => (
                     <div key={index} className="border-l border-border pl-4">
                       <h3 className="mb-1 text-base font-medium text-foreground">
-                        {talent.name}
+                        <EText zh={talent.name} en={talent.nameEn ?? talent.name} />
                       </h3>
                       <p className="text-sm leading-[1.7] text-muted-foreground">
-                        {talent.description}
+                        <EText zh={talent.description} en={talent.descriptionEn ?? talent.description} />
                       </p>
                     </div>
                   ))}

@@ -32,11 +32,17 @@ export interface TechRoute {
   id: string;
   name: string;
   description: string;
+  /** English Mode 文案（与中文同序） */
+  nameEn?: string;
+  descriptionEn?: string;
 }
 
 export interface TalentType {
   name: string;
   description: string;
+  /** English Mode 文案（与中文同序） */
+  nameEn?: string;
+  descriptionEn?: string;
 }
 
 export interface Track {
@@ -51,8 +57,12 @@ export interface Track {
   order: number;
   status: TrackStatus;
   overview: string;
+  /** English Mode 下的赛道概览正文 */
+  overviewEn?: string;
   techRoutes: TechRoute[];
   applications: string[];
+  /** English Mode 下的应用方向（与 applications 同序） */
+  applicationsEn?: string[];
   talentTypes: TalentType[];
   heroGradient: string;
 }

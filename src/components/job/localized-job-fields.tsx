@@ -58,3 +58,32 @@ export function LJobExperience({ job, className }: { job: EduExpJob; className?:
   const { mode } = useLanguageMode();
   return <span className={className}>{localizedExperience(job, mode)}</span>;
 }
+
+/**
+ * LJobBulletList — 岗位职责/任职要求的编号列表（英文优先，空则回落中文）。
+ * 渲染结构与岗位详情页原有列表保持一致（01/02… 编号 + 正文）。
+ */
+export function LJobBulletList({
+  items,
+  itemsEn,
+  className = 'space-y-4',
+}: {
+  items: string[];
+  itemsEn?: string[];
+  className?: string;
+}) {
+  const { mode } = useLanguageMode();
+  const list = mode === 'en' && itemsEn && itemsEn.length > 0 ? itemsEn : items;
+  return (
+    <ul className={className}>
+      {list.map((item, index) => (
+        <li key={index} className="flex gap-4">
+          <span className="mt-1 font-mono text-xs text-muted-foreground">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          <span className="leading-[1.7] text-muted-foreground">{item}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}

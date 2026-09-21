@@ -23,7 +23,9 @@ export interface PublicJob {
   /** 经验要求英文（Console 录入；为空时英文模式回落映射表 → 中文） */
   experienceEn: string;
   requirements: string[];
+  requirementsEn: string[];
   responsibilities: string[];
+  responsibilitiesEn: string[];
   salary_display: string;
   published_at: string;
   status: string;

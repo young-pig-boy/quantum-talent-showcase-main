@@ -14,7 +14,7 @@ import {
 import { format } from 'date-fns';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
-import { LJobTitle, LJobDirection, LJobSeniority, LJobSummary, LJobEducation, LJobExperience } from '@/components/job/localized-job-fields';
+import { LJobTitle, LJobDirection, LJobSeniority, LJobSummary, LJobEducation, LJobExperience, LJobBulletList } from '@/components/job/localized-job-fields';
 import { ScrollReveal } from '@/components/ui/scroll-reveal';
 import { LiquidGlass } from '@/components/ui/liquid-glass';
 import { ShareButton } from '@/components/job/share-button';
@@ -237,16 +237,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                   <h2 className="mb-6 text-2xl font-bold text-foreground">
                     <EText zh="岗位职责" en="Responsibilities" />
                   </h2>
-                  <ul className="space-y-4">
-                    {job.responsibilities.map((item, index) => (
-                      <li key={index} className="flex gap-4">
-                        <span className="mt-1 font-mono text-xs text-muted-foreground">
-                          {String(index + 1).padStart(2, '0')}
-                        </span>
-                        <span className="leading-[1.7] text-muted-foreground">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <LJobBulletList items={job.responsibilities} itemsEn={job.responsibilitiesEn} />
                 </div>
               </ScrollReveal>
 
@@ -260,18 +251,9 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
                     <h2 className="mb-6 text-2xl font-bold text-foreground">
                       <EText zh="任职要求" en="Requirements" />
                     </h2>
-                    <ul className="space-y-4">
-                      {job.requirements.map((item, index) => (
-                        <li key={index} className="flex gap-4">
-                          <span className="mt-1 font-mono text-xs text-muted-foreground">
-                            {String(index + 1).padStart(2, '0')}
-                          </span>
-                          <span className="leading-[1.7] text-muted-foreground">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </ScrollReveal>
+                  <LJobBulletList items={job.requirements} itemsEn={job.requirementsEn} />
+                </div>
+              </ScrollReveal>
               )}
 
               {/* Related jobs */}
